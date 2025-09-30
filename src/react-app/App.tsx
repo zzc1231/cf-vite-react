@@ -7,10 +7,8 @@ import BlogPage from "@/pages/blog";
 import AboutPage from "@/pages/about";
 import TonePage from "@/pages/tone"
 import ScalesTrainig from "@/pages/tone/scalesTraining";
-import { useEffect, useState } from "react";
+import { useEffect, } from "react";
 
-import { useLocalStorage } from "@/utils/localStorage";
-import { randomUUID } from "crypto";
 
 import FingerprintJS from '@fingerprintjs/fingerprintjs';
 
