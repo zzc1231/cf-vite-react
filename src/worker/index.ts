@@ -16,7 +16,7 @@ app.get("/record", async (c) => {
 })
 
 app.get("/todayFirst", async (c) => {
-    const ip = c.req.header('CF-Connecting-IP');
+    //  const ip = c.req.header('CF-Connecting-IP');
     const visitorId = c.req.header("X-Visitor-Id");
     const db = c.env.isTodayFirst; // Cloudflare D1 binding
     const { results } = await db
@@ -27,7 +27,7 @@ app.get("/todayFirst", async (c) => {
 })
 
 app.post("/done", async (c) => {
-    const ip = c.req.header('CF-Connecting-IP');
+    // const ip = c.req.header('CF-Connecting-IP');
     const visitorId = c.req.header("X-Visitor-Id");
     const db = c.env.isTodayFirst; // Cloudflare D1 binding
     const { results } = await db
