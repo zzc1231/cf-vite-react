@@ -21,10 +21,10 @@ export default function DocsPage() {
                         {record.map((item, index) => (
                             <div className="flex">
                                 <div>{index}</div>
-                                <div> id: {item.id}</div>
-                                <div> create_at: {item.create_at}</div>
-                                <div> date: {item.date}</div>
-                                <div> ip: {item.ip}</div>
+                                <div> id:{item.id}</div>
+                                <div> create_at:{item.create_at}</div>
+                                <div> date:{item.date}</div>
+                                <div> ip:{item.ip}</div>
                             </div>
                         ))}
                     </div>
@@ -38,10 +38,10 @@ export default function DocsPage() {
                         }}> 提交</Button>
 
                         <Button onPressUp={() => {
-                            fetch("/todayFirst", { method: "POST" })
+                            fetch("/todayFirst")
                                 .then(res => res.json() as Promise<{ count: string }>)
                                 .then((data) => alert("count: " + data.count))
-                        }}> 是否今日首次</Button>
+                        }}> 查询今日次数</Button>
                     </div>
 
 
