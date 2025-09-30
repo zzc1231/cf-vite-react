@@ -14,7 +14,6 @@ import { Navbar, NavbarContent, NavbarItem } from "@heroui/navbar";
 
 import { ThemeSwitch } from "@/components/theme-switch";
 import EarTrainingPanel, { EarTrainingRef } from "./componemts/earTeanningPanel";
-import DefaultLayout from "@/layouts/default";
 import BlankLayout from "@/layouts/blank";
 
 interface ToneConfig {
