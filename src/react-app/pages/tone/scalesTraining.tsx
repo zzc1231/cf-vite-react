@@ -122,7 +122,7 @@ const Page = () => {
                     </NavbarContent>
 
                 </Navbar>
-                <div className=" space-y-2  justify-center w-full ">
+                <div className=" space-y-2  justify-center w-full  px-4 pt-2">
 
                     <EarTrainingPanel
                         ref={earRef}

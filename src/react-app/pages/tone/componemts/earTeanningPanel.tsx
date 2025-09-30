@@ -199,39 +199,41 @@ const Page = forwardRef<EarTrainingRef, EarTrainingProps>((props: EarTrainingPro
 
     return (
         <section className="h-full w-full flex flex-col items-center  gap-4">
-            <div className=" space-y-2  justify-center  lg:min-w-[50%] " ref={containerRef}>
-                <div className="overflow-x-auto  space-y-2" >
-                    <div className="grid grid-flow-col auto-cols-auto gap-1 items-center ">
-                        {Array.from({ length: props.melodyLength }).map((_, index) => (
-                            <div className="flex flex-col space-y-1" key={index}>
+            <div className=" space-y-2  justify-center  w-full xl:min-w-[50%] " ref={containerRef}>
+
+                <div className="overflow-x-auto grid grid-flow-col auto-cols-auto gap-1 items-center ">
+                    {Array.from({ length: props.melodyLength }).map((_, index) => (
+                        <div className="flex flex-col space-y-1 min-w-10" key={index}>
+                            <Snippet
+                                className="text-lg font-bold justify-center "
+                                hideCopyButton
+                                hideSymbol
+                            >
+                                {isAnswerCorrect == null ? "*" : melody[index]}
+                            </Snippet>
+                            {userClicks.length > index ?
                                 <Snippet
-                                    className="text-lg font-bold justify-center px-0"
-                                    hideCopyButton hideSymbol >
-                                    {isAnswerCorrect == null ? "*" : melody[index]}
+                                    className="text-lg font-thin justify-center "
+                                    hideCopyButton
+                                    hideSymbol
+                                    color={isAnswerCorrect == null ? "default" : (isPitchEqual(melody[index], userClicks[index]) ? "success" : "danger")}
+                                >
+                                    {userClicks[index]}
                                 </Snippet>
-                                {userClicks.length > index ?
-                                    <Snippet
-                                        className="text-lg font-bold  justify-center px-0"
-                                        hideCopyButton
-                                        hideSymbol
-                                        color={isAnswerCorrect == null ? "default" : (isPitchEqual(melody[index], userClicks[index]) ? "success" : "danger")}
-                                    >
-                                        {userClicks[index]}
-                                    </Snippet>
-                                    :
-                                    <Snippet
-                                        className="text-lg font-bold  justify-center px-0"
-                                        hideCopyButton
-                                        hideSymbol
-                                        color={"default"}
-                                    >
-                                        {"_"}
-                                    </Snippet>
-                                }
-                            </div>
-                        ))}
-                    </div>
+                                :
+                                <Snippet
+                                    className="text-lg font-bold justify-center "
+                                    hideCopyButton
+                                    hideSymbol
+                                    color={"default"}
+                                >
+                                    {"_"}
+                                </Snippet>
+                            }
+                        </div>
+                    ))}
                 </div>
+
 
                 <Spacer y={2}></Spacer>
 
@@ -255,14 +257,14 @@ const Page = forwardRef<EarTrainingRef, EarTrainingProps>((props: EarTrainingPro
 
                 <Spacer y={2}></Spacer>
 
-                <div className="grid grid-cols-2 gap-2 h-12">
+                <div className="grid grid-cols-2 gap-1">
                     <Button size="lg" onPress={startExercise} isDisabled={isPlaying}> 下一条 </Button>
                     <Button size="lg" onPress={submitAnswer} isDisabled={melody.length == 0 || userClicks.length != melody.length || isAnswerCorrect != null} color="primary" variant="flat"> 确定 </Button>
                 </div>
 
                 <Spacer y={2}></Spacer>
 
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-3 gap-1">
                     <Button size="lg" onPress={() => PlayNoteOnce(props.refrenceNote)} isDisabled={isPlaying} startContent={<PlayIcon width={22} />}> {props.refrenceNote} </Button>
                     <Button size="lg" onPress={() => playMelody(melody)} isDisabled={isPlaying || melody.length == 0} startContent={<PlayCircleIcon width={22} />}> </Button>
                     <Button size="lg" onPress={() => setUserClicks([])} startContent={<BackspaceIcon width={22} />}>  </Button>
