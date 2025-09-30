@@ -11,7 +11,7 @@ import ScalesTrainig from "@/pages/tone/scalesTraining";
 function App() {
     return (
         <Routes>
-            <Route element={<ScalesTrainig />} path="/" />
+            <Route element={<PricingPage />} path="/" />
             <Route element={<TonePage />} path="/tone" />
             <Route element={<IndexPage />} path="/index" />
             <Route element={<DocsPage />} path="/docs" />

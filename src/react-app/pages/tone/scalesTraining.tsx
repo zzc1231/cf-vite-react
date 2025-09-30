@@ -41,31 +41,36 @@ const scaleMap: Map<string, KeyConfig> = new Map([
         keyLibrary: ['C', '', 'D', 'Eb', '', 'F', '', 'G', 'Ab', '', 'Bb', ''],
         melodyLibrary: ['C4', 'D4', 'Eb4', 'F4', 'G4', 'Ab4', 'Bb4'],
     }],
+    // 自然小调，但第6级升高
     ["C Dorian", {
         keyLibrary: ['C', '', 'D', 'Eb', '', 'F', '', 'G', '', 'A', 'Bb', ''],
         melodyLibrary: ['C4', 'D4', 'Eb4', 'F4', 'G4', 'A4', 'Bb4'],
     }],
+    // 小调音阶，第2级降半音，有西班牙味道
     ["C Phrygian", {
         keyLibrary: ['C', 'Db', '', 'Eb', '', 'F', '', 'G', 'Ab', '', 'Bb'],
         melodyLibrary: ['C4', 'Db4', 'Eb4', 'F4', 'G4', 'Ab4', 'Bb4'],
     }],
+    // 大调音阶，第4级升半音，有明亮感
     ["C Lydian", {
         keyLibrary: ['C', '', 'D', '', 'E', '', 'F#', 'G', '', 'A', '', 'B'],
         melodyLibrary: ['C4', 'D4', 'E4', 'F#4', 'G4', 'A4', 'B4'],
     }],
+    // 大调音阶，第7级降半音，有民谣味道
     ["C Mixolydian", {
         keyLibrary: ['C', '', 'D', '', 'E', 'F', '', 'G', '', 'A', 'Bb', ''],
         melodyLibrary: ['C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'Bb4'],
     }],
+    // 自然小调
     ["C Aeolian", {
         keyLibrary: ['C', '', 'D', 'Eb', '', 'F', '', 'G', 'Ab', '', 'Bb'],
         melodyLibrary: ['C4', 'D4', 'Eb4', 'F4', 'G4', 'Ab4', 'Bb4'],
     }],
+    // 小调，第2级降半音，第5级降半音，很不稳定
     ["C Locrian", {
         keyLibrary: ['C', 'Db', '', 'Eb', '', 'F', 'Gb', '', 'Ab', '', 'Bb'],
         melodyLibrary: ['C4', 'Db4', 'Eb4', 'F4', 'Gb4', 'Ab4', 'Bb4'],
     }],
-
 ])
 
 const Page = () => {
