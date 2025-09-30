@@ -235,12 +235,12 @@ const Page = forwardRef<EarTrainingRef, EarTrainingProps>((props: EarTrainingPro
                 </div>
 
 
-                <Spacer y={2}></Spacer>
+                <Spacer y={4}></Spacer>
 
                 <div className="grid grid-cols-3 gap-y-1 gap-x-1 items-stretch">
                     {btnNameLib.map((note, index) => (
                         <Button
-                            className="h-15"
+                            className="h-15 text-lg font-medium"
                             key={index}
                             onPressStart={() => handleNoteButtonPressStart(noteLib[index])}
                             onPressEnd={() => handleNoteButtonPressEnd(noteLib[index])}
@@ -255,19 +255,19 @@ const Page = forwardRef<EarTrainingRef, EarTrainingProps>((props: EarTrainingPro
                     ))}
                 </div>
 
-                <Spacer y={2}></Spacer>
+                <Spacer y={4}></Spacer>
 
                 <div className="grid grid-cols-2 gap-1">
                     <Button size="lg" onPress={startExercise} isDisabled={isPlaying}> 下一条 </Button>
                     <Button size="lg" onPress={submitAnswer} isDisabled={melody.length == 0 || userClicks.length != melody.length || isAnswerCorrect != null} color="primary" variant="flat"> 确定 </Button>
                 </div>
 
-                <Spacer y={2}></Spacer>
+                <Spacer y={4}></Spacer>
 
                 <div className="grid grid-cols-3 gap-1">
                     <Button size="lg" onPress={() => PlayNoteOnce(props.refrenceNote)} isDisabled={isPlaying} startContent={<PlayIcon width={22} />}> {props.refrenceNote} </Button>
                     <Button size="lg" onPress={() => playMelody(melody)} isDisabled={isPlaying || melody.length == 0} startContent={<PlayCircleIcon width={22} />}> </Button>
-                    <Button size="lg" onPress={() => setUserClicks([])} startContent={<BackspaceIcon width={22} />}>  </Button>
+                    <Button size="lg" onPress={() => setUserClicks([])} isDisabled={isAnswerCorrect != null} startContent={<BackspaceIcon width={22} />}>  </Button>
                 </div>
             </div >
 

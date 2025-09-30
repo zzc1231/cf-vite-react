@@ -40,7 +40,32 @@ const scaleMap: Map<string, KeyConfig> = new Map([
     ["C Minor", {
         keyLibrary: ['C', '', 'D', 'Eb', '', 'F', '', 'G', 'Ab', '', 'Bb', ''],
         melodyLibrary: ['C4', 'D4', 'Eb4', 'F4', 'G4', 'Ab4', 'Bb4'],
-    }]
+    }],
+    ["C Dorian", {
+        keyLibrary: ['C', '', 'D', 'Eb', '', 'F', '', 'G', '', 'A', 'Bb', ''],
+        melodyLibrary: ['C4', 'D4', 'Eb4', 'F4', 'G4', 'A4', 'Bb4'],
+    }],
+    ["C Phrygian", {
+        keyLibrary: ['C', 'Db', '', 'Eb', '', 'F', '', 'G', 'Ab', '', 'Bb'],
+        melodyLibrary: ['C4', 'Db4', 'Eb4', 'F4', 'G4', 'Ab4', 'Bb4'],
+    }],
+    ["C Lydian", {
+        keyLibrary: ['C', '', 'D', '', 'E', '', 'F#', 'G', '', 'A', '', 'B'],
+        melodyLibrary: ['C4', 'D4', 'E4', 'F#4', 'G4', 'A4', 'B4'],
+    }],
+    ["C Mixolydian", {
+        keyLibrary: ['C', '', 'D', '', 'E', 'F', '', 'G', '', 'A', 'Bb', ''],
+        melodyLibrary: ['C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'Bb4'],
+    }],
+    ["C Aeolian", {
+        keyLibrary: ['C', '', 'D', 'Eb', '', 'F', '', 'G', 'Ab', '', 'Bb'],
+        melodyLibrary: ['C4', 'D4', 'Eb4', 'F4', 'G4', 'Ab4', 'Bb4'],
+    }],
+    ["C Locrian", {
+        keyLibrary: ['C', 'Db', '', 'Eb', '', 'F', 'Gb', '', 'Ab', '', 'Bb'],
+        melodyLibrary: ['C4', 'Db4', 'Eb4', 'F4', 'Gb4', 'Ab4', 'Bb4'],
+    }],
+
 ])
 
 const Page = () => {
