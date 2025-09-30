@@ -7,11 +7,39 @@ import BlogPage from "@/pages/blog";
 import AboutPage from "@/pages/about";
 import TonePage from "@/pages/tone"
 import ScalesTrainig from "@/pages/tone/scalesTraining";
+import { useEffect, useState } from "react";
+
+import { useLocalStorage } from "@/utils/localStorage";
+import { randomUUID } from "crypto";
+
+import FingerprintJS from '@fingerprintjs/fingerprintjs';
 
 function App() {
+
+
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            const setFp = async () => {
+                const fp = await FingerprintJS.load();
+
+                const { visitorId } = await fp.get();
+
+                const originalFetch = window.fetch;
+                window.fetch = async (input, init = {}) => {
+                    init.headers = {
+                        ...(init.headers || {}),
+                        "X-Visitor-Id": visitorId,
+                    };
+                    return originalFetch(input, init);
+                };
+            }
+            setFp();
+        }
+    }, []);
+
     return (
         <Routes>
-            <Route element={<PricingPage />} path="/" />
+            <Route element={<ScalesTrainig />} path="/" />
             <Route element={<TonePage />} path="/tone" />
             <Route element={<IndexPage />} path="/index" />
             <Route element={<DocsPage />} path="/docs" />
