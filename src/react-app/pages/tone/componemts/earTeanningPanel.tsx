@@ -3,8 +3,8 @@
 import { Snippet } from "@heroui/snippet";
 import { Button } from '@heroui/button';
 import * as Tone from 'tone';
-import { useEffect, useState, useRef } from "react";
-import { BackspaceIcon, PlayCircleIcon } from "@heroicons/react/24/solid";
+import { useEffect, useState, useRef, useImperativeHandle, forwardRef } from "react";
+import { BackspaceIcon, PlayCircleIcon, PlayIcon } from "@heroicons/react/24/outline";
 import { useDisclosure } from "@heroui/use-disclosure";
 import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@heroui/modal";
 import { Spacer } from "@heroui/spacer";
@@ -36,7 +36,15 @@ export interface EarTrainingProps {
     }) => void;
 }
 
-const Page = (props: EarTrainingProps,) => {
+// ✅ 子组件对外暴露的方法类型
+export interface EarTrainingRef {
+    newQuestion: () => void;   // 例如：重新出题
+    playCurrent: () => void;   // 例如：播放当前题目
+    reset: () => void;   // 例如：清空答案
+}
+
+
+const Page = forwardRef<EarTrainingRef, EarTrainingProps>((props: EarTrainingProps, ref) => {
     const containerRef = useRef(null);
 
     const readyModal = useDisclosure({ defaultOpen: true });
@@ -58,6 +66,28 @@ const Page = (props: EarTrainingProps,) => {
             synthRef.current = new Tone.PolySynth().toDestination();
         }
     }, []);
+
+
+    useEffect(() => {
+
+    }, [props.melodyLength]);
+
+
+    // ✅ 暴露方法给父组件
+    useImperativeHandle(ref, () => ({
+        newQuestion() {
+            startExercise();
+        },
+        playCurrent() {
+            playMelody(melody)
+        },
+        reset() {
+            Tone.getTransport().cancel();
+            synth().releaseAll();
+            setMelody([])
+            setUserClicks([])
+        }
+    }));
 
     const synth = () => {
         if (!synthRef.current) {
@@ -141,15 +171,24 @@ const Page = (props: EarTrainingProps,) => {
     };
 
     const submitAnswer = () => {
-        // 检查用户答案是否正确
-        if (userClicks.length === melody.length) {
-            const isCorrect = userClicks.every((click, index) => isPitchEqual(click, melody[index]));
-            setIsAnswerCorrect(isCorrect);
 
-            if (isCorrect) {
-                startExercise();
-            }
+        if (userClicks.length != melody.length) {
+            return
         }
+
+        // 检查用户答案是否正确
+        const isCorrect = userClicks.every((click, index) => isPitchEqual(click, melody[index]));
+        setIsAnswerCorrect(isCorrect);
+
+        // if (isCorrect) {
+        //     startExercise();
+        // }
+        props.onAnswer && props.onAnswer({
+            correct: isCorrect,
+            question: melody,
+            answer: userClicks
+        });
+
     };
 
     async function PlayNoteOnce(note: string) {
@@ -158,38 +197,48 @@ const Page = (props: EarTrainingProps,) => {
         synth().triggerAttackRelease(note, "4n", Tone.now() + 0.05);
     }
 
-
     return (
         <section className="h-full w-full flex flex-col items-center  gap-4">
             <div className=" space-y-2  justify-center  lg:min-w-[50%] " ref={containerRef}>
                 <div className="overflow-x-auto  space-y-2" >
                     <div className="grid grid-flow-col auto-cols-auto gap-1 items-center ">
-                        {melody.map((note, index) => (
+                        {Array.from({ length: props.melodyLength }).map((_, index) => (
                             <div className="flex flex-col space-y-1" key={index}>
                                 <Snippet
                                     className="text-lg font-bold justify-center px-0"
                                     hideCopyButton hideSymbol >
-                                    {isAnswerCorrect == null ? "*" : note}
+                                    {isAnswerCorrect == null ? "*" : melody[index]}
                                 </Snippet>
-
-                                <Snippet
-                                    className="text-lg font-bold  justify-center px-0"
-                                    hideCopyButton
-                                    hideSymbol
-                                    color={isAnswerCorrect == null ? "default" : (isPitchEqual(note, userClicks[index]) ? "success" : "danger")}
-                                >
-                                    {userClicks.length > index ? userClicks[index] : "_"}
-                                </Snippet>
+                                {userClicks.length > index ?
+                                    <Snippet
+                                        className="text-lg font-bold  justify-center px-0"
+                                        hideCopyButton
+                                        hideSymbol
+                                        color={isAnswerCorrect == null ? "default" : (isPitchEqual(melody[index], userClicks[index]) ? "success" : "danger")}
+                                    >
+                                        {userClicks[index]}
+                                    </Snippet>
+                                    :
+                                    <Snippet
+                                        className="text-lg font-bold  justify-center px-0"
+                                        hideCopyButton
+                                        hideSymbol
+                                        color={"default"}
+                                    >
+                                        {"_"}
+                                    </Snippet>
+                                }
                             </div>
                         ))}
                     </div>
                 </div>
 
-                <Spacer y={4}></Spacer>
+                <Spacer y={2}></Spacer>
 
                 <div className="grid grid-cols-3 gap-y-1 gap-x-1 items-stretch">
                     {btnNameLib.map((note, index) => (
                         <Button
+                            className="h-15"
                             key={index}
                             onPressStart={() => handleNoteButtonPressStart(noteLib[index])}
                             onPressEnd={() => handleNoteButtonPressEnd(noteLib[index])}
@@ -208,24 +257,20 @@ const Page = (props: EarTrainingProps,) => {
 
                 <div className="grid grid-cols-2 gap-2 h-12">
                     <Button size="lg" onPress={startExercise} isDisabled={isPlaying}> 下一条 </Button>
-                    <Button size="lg" onPress={submitAnswer} isDisabled={isPlaying} color="primary" variant="flat"> 确定 </Button>
+                    <Button size="lg" onPress={submitAnswer} isDisabled={melody.length == 0 || userClicks.length != melody.length || isAnswerCorrect != null} color="primary" variant="flat"> 确定 </Button>
                 </div>
 
-                <Spacer y={6}></Spacer>
+                <Spacer y={2}></Spacer>
 
                 <div className="grid grid-cols-3 gap-2">
-                    <Button size="lg" onPress={() => PlayNoteOnce(props.refrenceNote)} isDisabled={isPlaying} startContent={<PlayCircleIcon />}> {props.refrenceNote} </Button>
-                    <Button size="lg" onPress={() => playMelody(melody)} isDisabled={isPlaying} startContent={<PlayCircleIcon />}> </Button>
-                    <Button size="lg" onPress={() => setUserClicks([])} startContent={<BackspaceIcon />}>  </Button>
+                    <Button size="lg" onPress={() => PlayNoteOnce(props.refrenceNote)} isDisabled={isPlaying} startContent={<PlayIcon width={22} />}> {props.refrenceNote} </Button>
+                    <Button size="lg" onPress={() => playMelody(melody)} isDisabled={isPlaying || melody.length == 0} startContent={<PlayCircleIcon width={22} />}> </Button>
+                    <Button size="lg" onPress={() => setUserClicks([])} startContent={<BackspaceIcon width={22} />}>  </Button>
                 </div>
-
             </div >
-
-
 
             <Modal
                 isOpen={readyModal.isOpen}
-                // backdrop="blur"
                 hideCloseButton={true}
                 isDismissable={false}
                 portalContainer={containerRef.current ?? undefined}
@@ -236,12 +281,9 @@ const Page = (props: EarTrainingProps,) => {
                         <>
                             <ModalHeader className="flex flex-col gap-1">准备开始</ModalHeader>
                             <ModalBody>
-
                                 <Button size="lg" onPress={() => PlayNoteOnce(props.refrenceNote)} > 播放声音测试 </Button>
+                                <Button size="lg" color="primary" variant="shadow" isDisabled={playCount <= 0} onPress={readyModal.onClose} > 我能听到 </Button>
 
-                                <Button size="lg" isDisabled={playCount <= 0} onPress={readyModal.onClose} > 我能听到 </Button>
-                                <div className="flex py-2 px-1 justify-between">
-                                </div>
                             </ModalBody>
                             <ModalFooter>
                             </ModalFooter>
@@ -251,6 +293,6 @@ const Page = (props: EarTrainingProps,) => {
             </Modal>
         </section>
     );
-}
+})
 
 export default Page;

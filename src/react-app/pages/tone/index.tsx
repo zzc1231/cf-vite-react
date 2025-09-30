@@ -65,6 +65,9 @@ const Page = () => {
         setSuccessRate(rate);
     }, [record]);
 
+
+
+
     useEffect(() => {
 
         if (!config.melodyLength)

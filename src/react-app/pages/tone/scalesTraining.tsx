@@ -5,7 +5,7 @@ import { NumberInput } from "@heroui/number-input";
 import { Button } from '@heroui/button';
 import { RadioGroup, Radio } from "@heroui/radio";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Cog8ToothIcon } from "@heroicons/react/24/solid";
 import { useLocalStorage } from "@/utils/localStorage";
 import { useDisclosure } from "@heroui/use-disclosure";
@@ -13,8 +13,9 @@ import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@herou
 import { Navbar, NavbarContent, NavbarItem } from "@heroui/navbar";
 
 import { ThemeSwitch } from "@/components/theme-switch";
-import EarTrainingPanel from "./componemts/earTeanningPanel";
+import EarTrainingPanel, { EarTrainingRef } from "./componemts/earTeanningPanel";
 import DefaultLayout from "@/layouts/default";
+import BlankLayout from "@/layouts/blank";
 
 interface ToneConfig {
     bpm: number;
@@ -34,11 +35,11 @@ interface KeyConfig {
 
 const scaleMap: Map<string, KeyConfig> = new Map([
     ["C Major", {
-        keyLibrary: ['C4', 'C#4', 'D4', 'D#4', 'E4', 'F4', 'F#4', 'G4', 'G#4', 'A4', 'A#4', 'B4'],
+        keyLibrary: ['C', '', 'D', '', 'E', 'F', '', 'G', '', 'A', '', 'B'],
         melodyLibrary: ['C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4'],
     }],
     ["C Minor", {
-        keyLibrary: ['C4', 'C#4', 'D4', 'Eb4', 'E4', 'F4', 'F#4', 'G4', 'Ab4', 'A4', 'Bb4', 'B4'],
+        keyLibrary: ['C', '', 'D', 'Eb', '', 'F', '', 'G', 'Ab', '', 'Bb', ''],
         melodyLibrary: ['C4', 'D4', 'Eb4', 'F4', 'G4', 'Ab4', 'Bb4'],
     }]
 ])
@@ -49,6 +50,9 @@ const Page = () => {
     const [config, setConfig] = useLocalStorage<ToneConfig>("tone.config", { bpm: 120, melodyLength: 4, scaleName: scaleMap.keys().next().value ?? "" })
     const [record, setRecord] = useLocalStorage<ToneRecord>("tone.record", { totalExercises: 0, totalSuccesses: 0 })
     const [successRate, setSuccessRate] = useState<number>(0);
+
+    const earRef = useRef<EarTrainingRef>(null);
+
 
     useEffect(() => {
         let rate = 0;
@@ -64,6 +68,8 @@ const Page = () => {
         if (!config.melodyLength)
             return;
 
+        earRef.current?.reset()
+
     }, [config]);
 
 
@@ -74,8 +80,22 @@ const Page = () => {
     }
 
 
+    const onAnswer = ({ correct, question, answer }: { correct: boolean; question: string[]; answer: string[] }) => {
+        console.log(correct, question, answer)
+        setRecord({
+            ...record,
+            totalSuccesses: record.totalSuccesses + (correct ? 1 : 0),
+            totalExercises: record.totalExercises + 1
+        })
+
+        if (correct) {
+            earRef.current?.newQuestion();
+        }
+    }
+
+
     return (
-        <DefaultLayout>
+        <BlankLayout>
             <section className="h-full flex flex-col items-center  gap-4">
                 <Navbar>
                     <NavbarContent justify="center">
@@ -96,7 +116,7 @@ const Page = () => {
                     <NavbarContent justify="end">
                         <NavbarItem>
                             <Button isIconOnly onPressUp={settingModal.onOpen} variant="light">
-                                <Cog8ToothIcon className="self-center w-5 h-5"></Cog8ToothIcon>
+                                <Cog8ToothIcon className="self-center w-6 h-6"></Cog8ToothIcon>
                             </Button>
                             <ThemeSwitch className="p-2"></ThemeSwitch>
                         </NavbarItem>
@@ -106,11 +126,13 @@ const Page = () => {
                 <div className=" space-y-2  justify-center w-full ">
 
                     <EarTrainingPanel
-
-                        refrenceNote={scaleMap.get(config?.scaleName)?.keyLibrary[0] ?? "C4"}
+                        ref={earRef}
+                        refrenceNote={scaleMap.get(config?.scaleName)?.melodyLibrary[0] ?? "C4"}
                         noteRange={scaleMap.get(config?.scaleName)?.melodyLibrary ?? []}
                         melodyLength={config.melodyLength}
                         bpm={config.bpm}
+                        customKeyNames={scaleMap.get(config?.scaleName)?.keyLibrary}
+                        onAnswer={onAnswer}
                     ></EarTrainingPanel>
                 </div >
 
@@ -175,7 +197,7 @@ const Page = () => {
                     </ModalContent>
                 </Modal>
             </section>
-        </DefaultLayout>
+        </BlankLayout>
     );
 }
 
