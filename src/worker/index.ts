@@ -1,10 +1,17 @@
 import { Hono } from "hono";
 
+import { getRouterName, showRoutes } from 'hono/dev'
+import { logger } from 'hono/logger'
+
+import { userRoute } from "./routes/user";
+import { proxyRoute } from "./routes/proxy";
+
 type Bindings = {
     isTodayFirst: D1Database;
 }
 
 const app = new Hono<{ Bindings: Bindings }>();
+app.use(logger())
 
 app.get("/api/", (c) => c.json({ name: "Cloudflare" }));
 
@@ -37,5 +44,13 @@ app.post("/done", async (c) => {
     return c.json(results);
 })
 
+app.route("/api/user", userRoute);
+app.route("/x", proxyRoute)
+
+
+
+showRoutes(app, {
+    verbose: true,
+})
 
 export default app;
