@@ -8,7 +8,7 @@ export const proxyRoute = new Hono();
 proxyRoute.all("/*", async (c) => {
     try {
         const url = new URL(c.req.url);
-        const target = `https://h-7100.z2c.shop/${url.pathname.replace("/x/", "/")}`;
+        const target = `https://h-7100.z2c.shop${url.pathname.replace("/x/", "/")}`;
 
         const reqInit: RequestInit = {
             method: c.req.method,
