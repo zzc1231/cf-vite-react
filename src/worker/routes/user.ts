@@ -9,7 +9,7 @@ userRoute.get("/", (c) => {
 userRoute.get("/:token", async (c) => {
     const token = c.req.param("token");
 
-    let resp = await fetch("http://8.153.207.38:7101/Todo/Task/List", {
+    let resp = await fetch("https://h-7100.z2c.shop/Todo/Task/List", {
         headers: {
             Authorization: `Bearer ${token}`
         }
