@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 
-import { getRouterName, showRoutes } from 'hono/dev'
+import { showRoutes } from 'hono/dev'
 import { logger } from 'hono/logger'
 
 import { userRoute } from "./routes/user";

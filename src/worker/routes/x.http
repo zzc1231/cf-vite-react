@@ -10,3 +10,10 @@ Authorization: Bearer {{token}}
 Get  http://localhost:5173/x/todo/Group/Explore
 Content-Type: application/json
 Authorization: Bearer {{token}}
+
+
+
+###
+Get  http://hero.z2c.shop/x/todo/Group/Explore
+Content-Type: application/json
+Authorization: Bearer {{token}}
