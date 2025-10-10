@@ -7,7 +7,7 @@ Authorization: Bearer {{token}}
 
 
 ###
-Get  http://localhost:5173/x/todo/Group/Explore
+Get  http://localhost:5173/x/todo/Group/Explore?PageSize=1&PageIndex=2
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
@@ -16,4 +16,14 @@ Authorization: Bearer {{token}}
 ###
 Get  https://hero.z2c.shop/x/todo/Group/Explore
 Content-Type: application/json
-Authorization: Bearer {{token}}
+
+
+
+###
+
+
+https://h-7100.z2c.shop/todo/Group/Explore
+
+
+
+https://h-7100.z2c.shop/Todo/Group/Explore
