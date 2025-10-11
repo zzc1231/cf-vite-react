@@ -272,6 +272,7 @@ const Page = forwardRef<EarTrainingRef, EarTrainingProps>((props: EarTrainingPro
             </div >
 
             <Modal
+                backdrop="blur"
                 isOpen={readyModal.isOpen}
                 hideCloseButton={true}
                 isDismissable={false}
@@ -283,8 +284,8 @@ const Page = forwardRef<EarTrainingRef, EarTrainingProps>((props: EarTrainingPro
                         <>
                             <ModalHeader className="flex flex-col gap-1">准备开始</ModalHeader>
                             <ModalBody>
-                                <Button size="lg" onPress={() => PlayNoteOnce(props.refrenceNote)} > 播放声音测试 </Button>
-                                <Button size="lg" color="primary" variant="shadow" isDisabled={playCount <= 0} onPress={readyModal.onClose} > 我能听到 </Button>
+                                <Button size="lg" color="danger" variant={playCount <= 0 ? "shadow" : "flat"} onPress={() => PlayNoteOnce(props.refrenceNote)} > 播放声音测试 </Button>
+                                <Button size="lg" color="primary" variant={playCount <= 0 ? "flat" : "shadow"} isDisabled={playCount <= 0} onPress={readyModal.onClose} > 我能听到 </Button>
 
                             </ModalBody>
                             <ModalFooter>

@@ -14,3 +14,22 @@ export const getPith = (note: string) => {
 export const isPitchEqual = (note1: string, note2: string) => {
     return getPith(note1) == getPith(note2);
 }
+
+
+/**
+ * 通过范围给出 区间内音列表
+ * @param start C2
+ * @param end  E5
+ * @returns 
+ */
+export const getNotesByMidiRange = (start: string, end: string) => {
+    const startMidi = Tone.Frequency(start).toMidi();
+    const endMidi = Tone.Frequency(end).toMidi();
+    const notes = [];
+    for (let midi = startMidi; midi <= endMidi; midi++) {
+        notes.push(Tone.Frequency(midi, "midi").toNote());
+    }
+    return notes;
+}
+
+export const getDefaultNoteRange = () => getNotesByMidiRange("c2", "c6")

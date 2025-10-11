@@ -17,6 +17,10 @@ export const siteConfig = {
             label: "scale",
             href: "/scale",
         },
+        {
+            label: "config",
+            href: "/config",
+        },
     ],
     navMenuItems: [
 
@@ -28,6 +32,10 @@ export const siteConfig = {
         {
             label: "scale",
             href: "/scale",
+        },
+        {
+            label: "config",
+            href: "/config",
         },
     ],
     links: {

@@ -7,6 +7,7 @@ import BlogPage from "@/pages/blog";
 import AboutPage from "@/pages/about";
 import TonePage from "@/pages/tone"
 import ScalesTrainig from "@/pages/tone/scalesTraining";
+import CustomConfig from "@/pages/tone/customConfig";
 import { useEffect, } from "react";
 
 
@@ -37,7 +38,7 @@ function App() {
 
     return (
         <Routes>
-            <Route element={<ScalesTrainig />} path="/" />
+            <Route element={<IndexPage />} path="/" />
             <Route element={<TonePage />} path="/tone" />
             <Route element={<IndexPage />} path="/index" />
             <Route element={<DocsPage />} path="/docs" />
@@ -45,6 +46,7 @@ function App() {
             <Route element={<BlogPage />} path="/blog" />
             <Route element={<AboutPage />} path="/about" />
             <Route element={<ScalesTrainig />} path="/scale" />
+            <Route element={<CustomConfig />} path="/config" />
         </Routes>
     );
 }
