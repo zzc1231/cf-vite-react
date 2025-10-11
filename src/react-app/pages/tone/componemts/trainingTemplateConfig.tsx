@@ -1,14 +1,13 @@
 'use client';
 
-import { Popover, PopoverTrigger, PopoverContent } from "@heroui/popover";
 import { Button } from '@heroui/button';
 import { Select, SelectItem } from "@heroui/select";
 import { useState } from "react";
 import { Spacer } from "@heroui/spacer";
 import { Input } from "@heroui/input";
 import { getDefaultNoteRange } from "@/utils/pitchCompare";
-import { SharedSelection } from "@heroui/system";
 import { Snippet } from "@heroui/snippet";
+import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@heroui/modal";
 
 export interface TrainingTemplateConfigProps {
     /**
@@ -30,22 +29,21 @@ const Page = (props: TrainingTemplateConfigProps,) => {
     const btnNameLib = ['C', 'C# _ Db', 'D', 'D# _ Eb', 'E', 'F', 'F# _ Gb', 'G', 'G# _ Ab', 'A', 'A# _ Bb', 'B']
     const noteLib = ['C4', 'C#4', 'D4', 'D#4', 'E4', 'F4', 'F#4', 'G4', 'G#4', 'A4', 'A#4', 'B4']
 
-
     const [customKeyNames, setCustomKeyNames] = useState(props.customKeyNames || btnNameLib);
     const [customKeyNotes, setCustomKeyNotes] = useState(props.customKeyNotes || noteLib);
     const [templateName] = useState(props.templateName || "新模板");
 
-    const noteRange = getDefaultNoteRange()
+    const [targetIndex, setTargetIndex] = useState<number>(-1)
+
+    const noteRange = getDefaultNoteRange().map(note => ({ key: note, label: note }))
     // debug: ensure noteRange has values
     console.debug('getDefaultNoteRange -> length:', noteRange.length, 'sample:', noteRange.slice(0, 6))
 
 
-    const onKeyNoteChange = (note: SharedSelection, index: number) => {
-        if (!note.currentKey)
-            return;
+    const onKeyNoteChange = (note: string, index: number) => {
 
         const newArr = [...customKeyNotes];
-        newArr[index] = note.currentKey;
+        newArr[index] = note;
         setCustomKeyNotes(newArr);
 
         props.onConfigChange?.({
@@ -92,48 +90,22 @@ const Page = (props: TrainingTemplateConfigProps,) => {
 
                 <div className="grid grid-cols-3 gap-y-1 gap-x-1 items-stretch">
                     {customKeyNames.map((keyName, index) => (
-                        <Popover key={index} showArrow offset={10} placement="bottom" backdrop="blur">
-                            <PopoverTrigger>
-                                <Button className="h-15 text-lg
-                                 flex items-center justify-center">
-                                    {keyName}
-                                    <Snippet
-                                        size="sm"
-                                        radius="lg"
-                                        className=" absolute bottom-1 right-1 "
-                                        hideCopyButton
-                                        hideSymbol
-                                        color="secondary"
-                                    >
-                                        {customKeyNotes[index]}
-                                    </Snippet>
-                                </Button>
 
-                            </PopoverTrigger>
-                            <PopoverContent className="w-[240px]">
+                        <Button className="h-15 text-lg
+                                 flex items-center justify-center" onPress={() => setTargetIndex(index)}>
+                            {keyName}
+                            <Snippet
+                                size="sm"
+                                radius="lg"
+                                className=" absolute bottom-1 right-1 "
+                                hideCopyButton
+                                hideSymbol
+                                color="secondary"
+                            >
+                                {customKeyNotes[index]}
+                            </Snippet>
+                        </Button>
 
-                                <div className="px-1 py-2 w-full">
-                                    <p className="text-small font-bold text-foreground">
-                                        按键配置
-                                    </p>
-                                    <div className="mt-2 flex flex-col gap-2 w-full">
-                                        <Input value={keyName} label="键名" onValueChange={val => onKeyNameChange(val, index)} />
-                                        <Input value={customKeyNotes[index]} label="音名" />
-                                        <Select
-                                            items={noteRange.map(note => ({ key: note, label: note }))}
-                                            className="max-w-xs"
-                                            label="音名"
-                                            placeholder="请选择音名"
-                                            selectedKeys={[customKeyNotes[index]]}
-                                            onSelectionChange={(keys) => onKeyNoteChange(keys, index)}
-                                        >
-                                            {(note) => <SelectItem key={note.key} >{note.label}</SelectItem>}
-                                        </Select>
-                                    </div>
-                                </div>
-
-                            </PopoverContent>
-                        </Popover>
 
                     ))}
                 </div>
@@ -165,7 +137,41 @@ const Page = (props: TrainingTemplateConfigProps,) => {
                     onValueChange={(data) => setConfig({ ...config, melodyLength: data })}
                 />
                 <Button size="lg" onPaste={clearScore} > 重置得分 </Button> */}
-
+                <Modal
+                    backdrop="blur"
+                    shouldBlockScroll={false}
+                    isOpen={targetIndex >= 0}
+                    // hideCloseButton={true}
+                    // isDismissable={false}
+                    // onClose={}
+                    onOpenChange={() => setTargetIndex(-1)}
+                >
+                    <ModalContent>
+                        {() => (
+                            <>
+                                <ModalHeader className="flex flex-col gap-1">修改按键</ModalHeader>
+                                <ModalBody>
+                                    <Input value={customKeyNames[targetIndex]} label="键名" labelPlacement="outside" onValueChange={val => onKeyNameChange(val, targetIndex)} />
+                                    <Input value={customKeyNotes[targetIndex]} label="音名" labelPlacement="outside" onValueChange={val => onKeyNoteChange(val, targetIndex)} />
+                                    <Select labelPlacement="outside"
+                                        label="音名"
+                                        selectionMode="single"
+                                        items={noteRange}
+                                        className=""
+                                        placeholder="请选择音名"
+                                        selectedKeys={[customKeyNotes[targetIndex]]}
+                                        onSelectionChange={(keys) => keys.currentKey && onKeyNoteChange(keys.currentKey, targetIndex)}
+                                    >
+                                        {(note) => <SelectItem key={note.key} >{note.label}</SelectItem>}
+                                    </Select>
+                                </ModalBody>
+                                <ModalFooter>
+                                    {/* <Button onPress={() => setTargetIndex(-1)}></Button> */}
+                                </ModalFooter>
+                            </>
+                        )}
+                    </ModalContent>
+                </Modal>
             </div>
         </section>
     );
