@@ -38,7 +38,7 @@ function App() {
 
     return (
         <Routes>
-            <Route element={<IndexPage />} path="/" />
+            <Route element={<CustomConfig />} path="/" />
             <Route element={<TonePage />} path="/tone" />
             <Route element={<IndexPage />} path="/index" />
             <Route element={<DocsPage />} path="/docs" />

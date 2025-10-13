@@ -2,7 +2,7 @@
 
 import { Button } from '@heroui/button';
 import { Select, SelectItem } from "@heroui/select";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Spacer } from "@heroui/spacer";
 import { Input } from "@heroui/input";
 import { getDefaultNoteRange } from "@/utils/pitchCompare";
@@ -31,7 +31,7 @@ const Page = (props: TrainingTemplateConfigProps,) => {
 
     const [customKeyNames, setCustomKeyNames] = useState(props.customKeyNames || btnNameLib);
     const [customKeyNotes, setCustomKeyNotes] = useState(props.customKeyNotes || noteLib);
-    const [templateName] = useState(props.templateName || "新模板");
+    const [templateName, setTemplateName] = useState(props.templateName || "新模板");
 
     const [targetIndex, setTargetIndex] = useState<number>(-1)
 
@@ -40,58 +40,57 @@ const Page = (props: TrainingTemplateConfigProps,) => {
     console.debug('getDefaultNoteRange -> length:', noteRange.length, 'sample:', noteRange.slice(0, 6))
 
 
+    // 当 props 改变时同步 state
+    useEffect(() => {
+        if (props.templateName !== undefined)
+            setTemplateName(props.templateName);
+
+        if (props.customKeyNames)
+            setCustomKeyNames(props.customKeyNames);
+
+        if (props.customKeyNotes)
+            setCustomKeyNotes(props.customKeyNotes);
+
+    }, [props.templateName, props.customKeyNames, props.customKeyNotes]);
+
+    // 统一通知父组件
+    useEffect(() => {
+        props.onConfigChange?.({
+            templateName,
+            customKeyNames,
+            customKeyNotes,
+        });
+    }, [templateName, customKeyNames, customKeyNotes]);
+
     const onKeyNoteChange = (note: string, index: number) => {
 
         const newArr = [...customKeyNotes];
         newArr[index] = note;
         setCustomKeyNotes(newArr);
-
-        props.onConfigChange?.({
-            ...props,
-            customKeyNotes: newArr
-        });
-
-        console.log(note, index);
     }
 
     const onKeyNameChange = (newName: string, index: number) => {
         const newArr = [...customKeyNames];
         newArr[index] = newName;
         setCustomKeyNames(newArr);
-
-        props.onConfigChange?.({
-            ...props,
-            customKeyNames: newArr
-        });
-
-        console.log(newName, index);
     }
 
-
+    const OnTemplateNameChange = (val: string) => {
+        setTemplateName(val);
+    }
 
     return (
         <section className="h-full w-full flex flex-col items-center  gap-4">
             <div className=" space-y-2  justify-center  w-full xl:min-w-[50%] ">
 
                 <div className="overflow-x-auto grid grid-flow-col auto-cols-auto gap-1 items-center "></div>
-                <Input value={templateName} label="名称" />
-                {/* <Select
-                    isRequired
-
-                    className="max-w-xs"
-                    label="音名"
-                    placeholder="请选择音名"
-                    // selectedKeys={[customKeyNotes[0]]}
-                    onSelectionChange={(keys) => onKeyNoteChange(keys, 0)}
-                >
-                    {noteRange.map((note) => (<SelectItem key={note} textValue={note}>{note}</SelectItem>))}
-                </Select> */}
+                <Input value={templateName} label="名称" onValueChange={OnTemplateNameChange} />
                 <Spacer y={4}></Spacer>
 
                 <div className="grid grid-cols-3 gap-y-1 gap-x-1 items-stretch">
                     {customKeyNames.map((keyName, index) => (
 
-                        <Button className="h-15 text-lg
+                        <Button key={index} className="h-15 text-lg
                                  flex items-center justify-center" onPress={() => setTargetIndex(index)}>
                             {keyName}
                             <Snippet
@@ -110,41 +109,12 @@ const Page = (props: TrainingTemplateConfigProps,) => {
                     ))}
                 </div>
 
-                {/* <NumberInput
-                    type="number"
-                    // autoFocus
-                    endContent={
-                        <p>BPM</p>
-                    }
-                    label="播放速度"
-                    description="控制乐句BPM"
-                    variant="bordered"
-                    min={10}
-                    value={config.bpm}
-                    onValueChange={(data) => setConfig({ ...config, bpm: data })}
-                />
-                <NumberInput
-                    endContent={
-                        <p>音</p>
-                    }
-                    label="乐句长度"
-                    description="控制随机乐句长度"
-                    placeholder="controll Melody length"
-                    type="number"
-                    variant="bordered"
-                    value={config.melodyLength}
-                    min={1}
-                    onValueChange={(data) => setConfig({ ...config, melodyLength: data })}
-                />
-                <Button size="lg" onPaste={clearScore} > 重置得分 </Button> */}
                 <Modal
                     backdrop="blur"
                     shouldBlockScroll={false}
                     isOpen={targetIndex >= 0}
-                    // hideCloseButton={true}
-                    // isDismissable={false}
-                    // onClose={}
-                    onOpenChange={() => setTargetIndex(-1)}
+                    isDismissable={false}
+                    onClose={() => setTargetIndex(-1)}
                 >
                     <ModalContent>
                         {() => (
@@ -166,7 +136,7 @@ const Page = (props: TrainingTemplateConfigProps,) => {
                                     </Select>
                                 </ModalBody>
                                 <ModalFooter>
-                                    {/* <Button onPress={() => setTargetIndex(-1)}></Button> */}
+                                    <Button onPress={() => setTargetIndex(-1)}>关闭</Button>
                                 </ModalFooter>
                             </>
                         )}

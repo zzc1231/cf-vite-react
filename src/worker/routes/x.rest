@@ -1,0 +1,65 @@
+
+
+###
+# @name Login1Result
+Post  https://hero.z2c.shop/x/todo/User/Login1?code=1
+Content-Type: application/json
+
+
+###
+@token = {{Login1Result.response.body.data.token}}
+
+###
+Get  http://localhost:5173/x/todo/Task/List
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+
+###
+Get  http://localhost:5173/x/todo/Group/Explore?PageSize=1&PageIndex=2
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+
+
+###
+Get  https://hero.z2c.shop/x/todo/Group/Explore?PageSize=1&PageIndex=2
+Content-Type: application/json
+
+
+
+###
+
+
+https://h-7100.z2c.shop/todo/Group/Explore?PageSize=1&PageIndex=2
+
+
+
+https://h-7100.z2c.shop/Todo/Group/Explore
+
+
+
+
+
+###
+get  https://hero.z2c.shop/x/Admin/Parameter?userid=1&PageSize=100&PageIndex=1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+###
+get  https://hero.z2c.shop/x/Admin/Parameter?userid=1&category=ear
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+
+###
+Post  https://hero.z2c.shop/x/Admin/Parameter
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "category": "ear",
+  "name": "string",
+  "longValue": "11111111",
+  "userID":1
+}
