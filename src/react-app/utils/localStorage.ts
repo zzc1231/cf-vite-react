@@ -1,16 +1,20 @@
 import { useState, useEffect } from "react";
 
 export function getStorageValue<T>(key: string, defaultValue: T): T {
-    if (typeof window == "undefined") {
-        return defaultValue;
-    }
+    try {
+        if (typeof window == "undefined") {
+            return defaultValue;
+        }
 
-    const confJson = localStorage.getItem(key);
-    if (confJson) {
-        return JSON.parse(confJson) as T;
-    }
+        const confJson = localStorage.getItem(key);
+        if (confJson) {
+            return JSON.parse(confJson) as T;
+        }
 
-    return defaultValue
+        return defaultValue
+    } catch {
+        return defaultValue
+    }
 
 }
 
