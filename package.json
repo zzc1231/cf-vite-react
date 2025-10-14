@@ -17,8 +17,10 @@
     "dependencies": {
         "@fingerprintjs/fingerprintjs": "^4.6.2",
         "@heroicons/react": "^2.2.0",
+        "@heroui/alert": "^2.2.27",
         "@heroui/button": "2.2.26",
         "@heroui/card": "^2.2.25",
+        "@heroui/checkbox": "^2.3.27",
         "@heroui/code": "2.2.20",
         "@heroui/dropdown": "2.3.26",
         "@heroui/input": "2.4.27",

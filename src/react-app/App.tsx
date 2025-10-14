@@ -6,9 +6,13 @@ import PricingPage from "@/pages/pricing";
 import BlogPage from "@/pages/blog";
 import AboutPage from "@/pages/about";
 import TonePage from "@/pages/tone"
+import Trial from "@/pages/tone/trial"
+import Login from "@/pages/login";
 import ScalesTrainig from "@/pages/tone/scalesTraining";
 import CustomConfig from "@/pages/tone/customConfig";
 import { useEffect, } from "react";
+
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 
 import FingerprintJS from '@fingerprintjs/fingerprintjs';
@@ -38,7 +42,9 @@ function App() {
 
     return (
         <Routes>
-            <Route element={<CustomConfig />} path="/" />
+            <Route path="/" element={<Login />} />
+            <Route element={<Trial />} path="/trial" />
+
             <Route element={<TonePage />} path="/tone" />
             <Route element={<IndexPage />} path="/index" />
             <Route element={<DocsPage />} path="/docs" />
@@ -47,6 +53,10 @@ function App() {
             <Route element={<AboutPage />} path="/about" />
             <Route element={<ScalesTrainig />} path="/scale" />
             <Route element={<CustomConfig />} path="/config" />
+            <Route path="/config1" element={<ProtectedRoute allowedStatuses={["normal"]} fallbackPath="/trial">
+                <CustomConfig /></ProtectedRoute>
+            } />
+            <Route path="/login" element={<Login />} />
         </Routes>
     );
 }

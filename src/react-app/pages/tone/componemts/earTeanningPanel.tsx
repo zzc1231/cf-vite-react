@@ -34,6 +34,8 @@ export interface EarTrainingProps {
         question: string[];
         answer: string[];
     }) => void;
+
+    onNewQuestion?: () => void
 }
 
 // ✅ 子组件对外暴露的方法类型
@@ -110,6 +112,8 @@ const Page = forwardRef<EarTrainingRef, EarTrainingProps>((props: EarTrainingPro
         setUserClicks([]);
         setIsAnswerCorrect(null)
         playMelody(randomMelody);
+
+        props.onNewQuestion && props.onNewQuestion();
     };
 
 
@@ -194,11 +198,18 @@ const Page = forwardRef<EarTrainingRef, EarTrainingProps>((props: EarTrainingPro
     async function PlayNoteOnce(note: string) {
         await Tone.start();
         setPlayCount(playCount + 1);
-        synth().triggerAttackRelease(note, "4n", Tone.now() + 0.05);
+        synth().
+            triggerAttackRelease(note, "4n", Tone.now() + 0.05);
+    }
+
+
+    const ready = () => {
+        readyModal.onClose()
+        startExercise()
     }
 
     return (
-        <section className="h-full w-full flex flex-col items-center  gap-4">
+        <>
             <div className=" space-y-2  justify-center  w-full xl:min-w-[50%] " ref={containerRef}>
 
                 <div className="overflow-x-auto grid grid-flow-col auto-cols-auto gap-1 items-center ">
@@ -285,8 +296,7 @@ const Page = forwardRef<EarTrainingRef, EarTrainingProps>((props: EarTrainingPro
                             <ModalHeader className="flex flex-col gap-1">准备开始</ModalHeader>
                             <ModalBody>
                                 <Button size="lg" color="danger" variant={playCount <= 0 ? "shadow" : "flat"} onPress={() => PlayNoteOnce(props.refrenceNote)} > 播放声音测试 </Button>
-                                <Button size="lg" color="primary" variant={playCount <= 0 ? "flat" : "shadow"} isDisabled={playCount <= 0} onPress={readyModal.onClose} > 我能听到 </Button>
-
+                                <Button size="lg" color="primary" variant={playCount <= 0 ? "flat" : "shadow"} isDisabled={playCount <= 0} onPress={ready} > 开始练习 </Button>
                             </ModalBody>
                             <ModalFooter>
                             </ModalFooter>
@@ -294,7 +304,7 @@ const Page = forwardRef<EarTrainingRef, EarTrainingProps>((props: EarTrainingPro
                     )}
                 </ModalContent>
             </Modal>
-        </section>
+        </>
     );
 })
 

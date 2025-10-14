@@ -9,6 +9,15 @@ Content-Type: application/json
 ###
 @token = {{Login1Result.response.body.data.token}}
 
+
+
+
+
+### 
+get  https://hero.z2c.shop/x/Admin/User/Info
+Content-Type: application/json
+Authorization:  {{token}}
+
 ###
 Get  http://localhost:5173/x/todo/Task/List
 Content-Type: application/json

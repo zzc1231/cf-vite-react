@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-function getStorageValue<T>(key: string, defaultValue: T): T {
+export function getStorageValue<T>(key: string, defaultValue: T): T {
     if (typeof window == "undefined") {
         return defaultValue;
     }
@@ -15,7 +15,7 @@ function getStorageValue<T>(key: string, defaultValue: T): T {
 }
 
 
-export const useLocalStorage = <T>(key: string, defaultValue: T): [T, (newValue: T) => void] => {
+export const useLocalStorage = <T>(key: string, defaultValue: T): [T, (newValue: T) => void, () => void] => {
     const [value, setValue] = useState(() => {
         return getStorageValue(key, defaultValue);
     });
@@ -24,6 +24,10 @@ export const useLocalStorage = <T>(key: string, defaultValue: T): [T, (newValue:
         localStorage.setItem(key, JSON.stringify(value));
     }, [key, value]);
 
-    return [value, setValue];
+    const clear = () => {
+        localStorage.removeItem(key);
+    }
+
+    return [value, setValue, clear];
 };
 
