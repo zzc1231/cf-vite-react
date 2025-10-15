@@ -16,7 +16,7 @@ import { useNavigate } from 'react-router-dom'
 
 export default function Component() {
     const [isVisible, setIsVisible] = React.useState(false);
-    const [token, setToken, clearToken] = useLocalStorage<string | undefined>("token", undefined)
+    const [token, setToken, clearToken] = useLocalStorage<string | undefined>("token", "")
 
     const navigate = useNavigate()
     const toggleVisibility = () => setIsVisible(!isVisible);
@@ -52,10 +52,12 @@ export default function Component() {
 
 
         const data = Object.fromEntries(new FormData(event.currentTarget));
+        const json = { ...data, remember: !!data.remember };
+        console.log(json)
         fetch("/x/Admin/User/Login", {
             method: "POST",
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data),
+            body: JSON.stringify(json),
         })
             .then(resp => resp.json())
             .then(body => {
@@ -87,7 +89,7 @@ export default function Component() {
                         label="用户名"
                         labelPlacement="outside"
                         name="username"
-                        placeholder="Enter your email"
+                        placeholder="输入账号"
                         type="text"
                         variant="bordered"
                     />
@@ -97,10 +99,12 @@ export default function Component() {
                             <button type="button" onClick={toggleVisibility}>
                                 {isVisible ? (
                                     <EyeSlashIcon
+                                        width={22}
                                         className="text-default-400 pointer-events-none text-2xl"
                                     />
                                 ) : (
                                     <EyeIcon
+                                        width={22}
                                         className="text-default-400 pointer-events-none text-2xl"
                                     />
                                 )}
@@ -109,12 +113,12 @@ export default function Component() {
                         label="密码"
                         labelPlacement="outside"
                         name="password"
-                        placeholder="Enter your password"
+                        placeholder="输入密码"
                         type={isVisible ? "text" : "password"}
                         variant="bordered"
                     />
                     <div className="flex w-full items-center justify-between px-1 py-2">
-                        <Checkbox defaultSelected name="remember" size="sm">
+                        <Checkbox defaultSelected name="remember" size="sm" value={"true"}>
                             记住我
                         </Checkbox>
                         <Link className="text-default-500" href="#" size="sm">

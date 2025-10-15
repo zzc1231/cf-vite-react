@@ -24,14 +24,20 @@ export const useLocalStorage = <T>(key: string, defaultValue: T): [T, (newValue:
         return getStorageValue(key, defaultValue);
     });
 
-    useEffect(() => {
-        localStorage.setItem(key, JSON.stringify(value));
-    }, [key, value]);
+    const updateValue = (newValue: T) => {
+        setValue(newValue);
+
+        if (newValue === defaultValue) {
+            localStorage.removeItem(key);
+        } else {
+            localStorage.setItem(key, JSON.stringify(newValue));
+        }
+    };
 
     const clear = () => {
-        localStorage.removeItem(key);
+        setValue(defaultValue);
     }
 
-    return [value, setValue, clear];
+    return [value, updateValue, clear];
 };
 

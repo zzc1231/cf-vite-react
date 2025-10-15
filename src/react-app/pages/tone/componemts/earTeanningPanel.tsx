@@ -212,7 +212,7 @@ const Page = forwardRef<EarTrainingRef, EarTrainingProps>((props: EarTrainingPro
         <>
             <div className=" space-y-2  justify-center  w-full xl:min-w-[50%] " ref={containerRef}>
 
-                <div className="overflow-x-auto grid grid-flow-col auto-cols-auto gap-1 items-center ">
+                <div className="overflow-x-auto grid grid-flow-col auto-cols-auto gap-1 items-center " id="div_keyPanel">
                     {Array.from({ length: props.melodyLength }).map((_, index) => (
                         <div className="flex flex-col space-y-1 min-w-10" key={index}>
                             <Snippet
@@ -251,6 +251,7 @@ const Page = forwardRef<EarTrainingRef, EarTrainingProps>((props: EarTrainingPro
                 <div className="grid grid-cols-3 gap-y-1 gap-x-1 items-stretch">
                     {btnNameLib.map((note, index) => (
                         <Button
+                            id={`btn_key_${index}`}
                             className="h-15 text-lg font-medium"
                             key={index}
                             onPressStart={() => handleNoteButtonPressStart(noteLib[index])}
@@ -269,16 +270,16 @@ const Page = forwardRef<EarTrainingRef, EarTrainingProps>((props: EarTrainingPro
                 <Spacer y={4}></Spacer>
 
                 <div className="grid grid-cols-2 gap-1">
-                    <Button size="lg" onPress={startExercise} isDisabled={isPlaying}> 下一条 </Button>
-                    <Button size="lg" onPress={submitAnswer} isDisabled={melody.length == 0 || userClicks.length != melody.length || isAnswerCorrect != null} color="primary" variant="flat"> 确定 </Button>
+                    <Button id="btn_nextTrain" size="lg" onPress={startExercise} isDisabled={isPlaying}> 下一条 </Button>
+                    <Button id="btn_sureAnswer" size="lg" onPress={submitAnswer} isDisabled={melody.length == 0 || userClicks.length != melody.length || isAnswerCorrect != null} color="primary" variant="flat"> 确定 </Button>
                 </div>
 
                 <Spacer y={4}></Spacer>
 
                 <div className="grid grid-cols-3 gap-1">
-                    <Button size="lg" onPress={() => PlayNoteOnce(props.refrenceNote)} isDisabled={isPlaying} startContent={<PlayIcon width={22} />}> {props.refrenceNote} </Button>
-                    <Button size="lg" onPress={() => playMelody(melody)} isDisabled={isPlaying || melody.length == 0} startContent={<PlayCircleIcon width={22} />}> </Button>
-                    <Button size="lg" onPress={() => setUserClicks([])} isDisabled={isAnswerCorrect != null} startContent={<BackspaceIcon width={22} />}>  </Button>
+                    <Button size="lg" onPress={() => PlayNoteOnce(props.refrenceNote)} isDisabled={isPlaying} startContent={<PlayIcon width={22} />} id="btn_playRefrence"> {props.refrenceNote} </Button>
+                    <Button size="lg" onPress={() => playMelody(melody)} isDisabled={isPlaying || melody.length == 0} startContent={<PlayCircleIcon width={22} id="btn_replay" />}> </Button>
+                    <Button size="lg" onPress={() => setUserClicks([])} isDisabled={isAnswerCorrect != null} startContent={<BackspaceIcon width={22} />} id="btn_clearAnswer">  </Button>
                 </div>
             </div >
 
@@ -289,18 +290,19 @@ const Page = forwardRef<EarTrainingRef, EarTrainingProps>((props: EarTrainingPro
                 isDismissable={false}
                 portalContainer={containerRef.current ?? undefined}
                 onOpenChange={readyModal.onOpenChange}
+
             >
                 <ModalContent>
                     {() => (
-                        <>
+                        <div id="modal_ready">
                             <ModalHeader className="flex flex-col gap-1">准备开始</ModalHeader>
                             <ModalBody>
-                                <Button size="lg" color="danger" variant={playCount <= 0 ? "shadow" : "flat"} onPress={() => PlayNoteOnce(props.refrenceNote)} > 播放声音测试 </Button>
-                                <Button size="lg" color="primary" variant={playCount <= 0 ? "flat" : "shadow"} isDisabled={playCount <= 0} onPress={ready} > 开始练习 </Button>
+                                <Button size="lg" color="danger" variant={playCount <= 0 ? "shadow" : "flat"} onPress={() => PlayNoteOnce(props.refrenceNote)} id="btn_readyPlay"> 播放声音测试 </Button>
+                                <Button size="lg" color="primary" variant={playCount <= 0 ? "flat" : "shadow"} isDisabled={playCount <= 0} onPress={ready} id="btn_startTrian"> 开始练习 </Button>
                             </ModalBody>
                             <ModalFooter>
                             </ModalFooter>
-                        </>
+                        </div>
                     )}
                 </ModalContent>
             </Modal>

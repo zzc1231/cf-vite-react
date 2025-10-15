@@ -17,6 +17,7 @@ import { ThemeSwitch } from "@/components/theme-switch";
 import EarTrainingPanel, { EarTrainingRef } from "./componemts/earTeanningPanel";
 import DefaultLayout from "@/layouts/default";
 import { Spacer } from "@heroui/spacer";
+import Joyride, { Step } from "react-joyride-react19-compat";
 
 interface ToneConfig {
     bpm: number;
@@ -79,23 +80,47 @@ const Page = () => {
     const settingModal = useDisclosure();
     const trailModal = useDisclosure({ defaultOpen: true });
 
+    const dailyLimit = 30;
+
     const [config, setConfig] = useLocalStorage<ToneConfig>("tone.config", { bpm: 120, melodyLength: 4, scaleName: scaleMap.keys().next().value ?? "" })
-    const [record, setRecord] = useLocalStorage<DailyTrial>(`tone.todayTrail_${new Date().getMonth()}_${new Date().getDay()}`, { used: 0, succ: 0 })
+    const [record, setRecord] = useLocalStorage<DailyTrial>(`tone.todayTrail_${new Date().getMonth()}_${new Date().getDate()}`, { used: 0, succ: 0 })
     const [successRate, setSuccessRate] = useState<number>(0);
 
     const earRef = useRef<EarTrainingRef>(null);
-    const dailyLimit = 30;
+
+    const initialSteps: Step[] = [
+        {
+            content: "马上开始",
+            placement: 'center',
+            target: 'body',
+        },
+        {
+            target: '#btn_readyPlay',
+            content: '先调整好扬声器或者耳机音量',
+            placement: 'auto',
+        },
+        {
+            target: '#modal_ready',
+            content: '确认能够听清楚声音就可以开始训练了',
+            placement: 'auto',
+        },
+        {
+            content: "点击答题按钮把依次把刚才的声音答出来",
+            placement: 'auto',
+            target: '#div_keyPanel',
+            title: '答题板',
+        },
+    ];
+
+    const [state, setState] = useState({
+        stepsEnabled: false,
+        initialStep: 0,
+        steps: initialSteps,
+    });
 
 
     useEffect(() => {
-        fetch("/todayFirst")
-            .then(res => res.json() as Promise<{ count: number }>)
-            .then((data) => {
-                setRecord({
-                    ...record,
-                    used: data.count,
-                })
-            })
+
     }, [])
 
     useEffect(() => {
@@ -146,9 +171,63 @@ const Page = () => {
     }
 
 
+    const startTrial = () => {
+
+        // setRecord({
+        //     ...record,
+        //     used: 0,
+        // })
+        // trailModal.onClose()
+        // setState({ ...state, stepsEnabled: true })
+        fetch("/todayFirst")
+            .then(res => res.json() as Promise<{ count: number }>)
+            .then((data) => {
+                setRecord({
+                    ...record,
+                    used: data.count,
+                })
+                trailModal.onClose()
+                setState({ ...state, stepsEnabled: true })
+            })
+    }
+
+    // function joyrideCallback(data: CallBackProps): void {
+    //     const {
+    //         // action,
+    //         // index,
+    //         // type,
+    //         // status,
+    //         step
+    //     } = data;
+    //     if (step.target.toString().startsWith("#")) {
+    //         document.getElementById(step.target.toString())?.click()
+    //     }
+    // }
+
     return (
         <DefaultLayout>
             <section className="h-full flex flex-col items-center ">
+                <Joyride
+                    steps={state.steps}
+                    run={state.stepsEnabled}
+                    continuous
+                    // showSkipButton
+                    disableOverlayClose
+                    hideCloseButton
+                    showProgress
+                    // callback={joyrideCallback}
+                    locale={{
+                        back: '上一步',
+                        close: '关闭',
+                        last: '完成',
+                        next: '下一步',
+                        skip: '跳过',
+                        nextLabelWithProgress: '下一步 ( {step} / {steps} )',
+                    }}
+                />
+
+
+
                 <Navbar>
                     <NavbarContent justify="center">
                         <NavbarItem >
@@ -237,7 +316,7 @@ const Page = () => {
                     hideCloseButton={true}
                 >
                     <ModalContent>
-                        {(onClose) => (
+                        {() => (
                             <>
                                 <ModalHeader className="flex flex-col gap-1">使用说明</ModalHeader>
                                 <ModalBody>
@@ -256,7 +335,7 @@ const Page = () => {
 
                                 </ModalBody>
                                 <ModalFooter>
-                                    <Button onPress={onClose}>开始试用</Button>
+                                    <Button onPress={startTrial}>开始试用</Button>
                                 </ModalFooter>
                             </>
                         )}

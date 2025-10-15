@@ -51,11 +51,17 @@ function App() {
             <Route element={<PricingPage />} path="/pricing" />
             <Route element={<BlogPage />} path="/blog" />
             <Route element={<AboutPage />} path="/about" />
-            <Route element={<ScalesTrainig />} path="/scale" />
-            <Route element={<CustomConfig />} path="/config" />
-            <Route path="/config1" element={<ProtectedRoute allowedStatuses={["normal"]} fallbackPath="/trial">
+
+            <Route path="/scale1" element={<ScalesTrainig />} />
+            <Route path="/scale" element={<ProtectedRoute allowedStatuses={["normal"]} fallbackPath="/login">
+                <ScalesTrainig />
+            </ProtectedRoute>} />
+
+            <Route element={<CustomConfig />} path="/config1" />
+            <Route path="/config" element={<ProtectedRoute allowedStatuses={["normal"]} fallbackPath="/login">
                 <CustomConfig /></ProtectedRoute>
             } />
+
             <Route path="/login" element={<Login />} />
         </Routes>
     );
