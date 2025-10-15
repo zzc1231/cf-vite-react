@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 export function getStorageValue<T>(key: string, defaultValue: T): T {
     try {
