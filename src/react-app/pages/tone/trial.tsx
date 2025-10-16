@@ -83,7 +83,7 @@ const Page = () => {
     const dailyLimit = 30;
 
     const [config, setConfig] = useLocalStorage<ToneConfig>("tone.config", { bpm: 120, melodyLength: 4, scaleName: scaleMap.keys().next().value ?? "" })
-    const [record, setRecord] = useLocalStorage<DailyTrial>(`tone.todayTrail_${new Date().getMonth()}_${new Date().getDate()}`, { used: 0, succ: 0 })
+    const [record, setRecord] = useLocalStorage<DailyTrial>(`tone.todayTrail_${new Date().getMonth()}_${new Date().getDate()}`, { used: dailyLimit - 1, succ: 0 })
     const [successRate, setSuccessRate] = useState<number>(0);
 
     const earRef = useRef<EarTrainingRef>(null);
@@ -93,11 +93,14 @@ const Page = () => {
             content: "开始吧！",
             placement: 'center',
             target: 'body',
+            title: "👋"
+
         },
         {
             target: '#btn_readyPlay',
             content: '先调好音量哦~',
             placement: 'top',
+
         },
         {
             target: '#btn_startTrian',
@@ -195,6 +198,9 @@ const Page = () => {
     }, [])
 
     useEffect(() => {
+        //同步存储
+        setRecord({ ...record, })
+
         if (record.used >= dailyLimit) {
             settingModal.onClose()
             trailModal.onClose()
@@ -206,7 +212,7 @@ const Page = () => {
         }
 
         setSuccessRate(rate);
-    }, [record]);
+    }, [record.used, record.succ]);
 
     useEffect(() => {
 
@@ -219,61 +225,33 @@ const Page = () => {
 
 
     const onAnswer = ({ correct, question, answer }: { correct: boolean; question: string[]; answer: string[] }) => {
-        console.log(correct, question, answer)
+        console.debug("onAnswer", correct, question, answer)
 
         if (correct) {
-            setRecord({
-                ...record,
-                succ: record.succ + 1,
-            })
+            record.succ++
+
 
             earRef.current?.newQuestion();
         }
     }
 
     const onNewQuestion = () => {
-
-        setRecord({
-            ...record,
-            used: record.used + 1,
-        })
+        record.used++
 
         fetch("/done", { method: "POST" })
     }
 
 
-    const startTrial = () => {
-
-        // setRecord({
-        //     ...record,
-        //     used: 0,
-        // })
-        // trailModal.onClose()
-        // setState({ ...state, stepsEnabled: true })
+    const startTrial = (tutorial: boolean = false) => {
         fetch("/todayFirst")
             .then(res => res.json() as Promise<{ count: number }>)
             .then((data) => {
-                setRecord({
-                    ...record,
-                    used: data.count,
-                })
+                record.used = data.count;
+
                 trailModal.onClose()
-                setState({ ...state, stepsEnabled: data.count == 0 })
+                setState({ ...state, stepsEnabled: tutorial ? true : data.count == 0 })
             })
     }
-
-    // function joyrideCallback(data: CallBackProps): void {
-    //     const {
-    //         // action,
-    //         // index,
-    //         // type,
-    //         // status,
-    //         step
-    //     } = data;
-    //     if (step.target.toString().startsWith("#")) {
-    //         document.getElementById(step.target.toString())?.click()
-    //     }
-    // }
 
     return (
         <DefaultLayout>
@@ -281,13 +259,11 @@ const Page = () => {
                 <Joyride
                     steps={state.steps}
                     run={state.stepsEnabled}
-                    continuous
-                    // showSkipButton
-                    disableOverlayClose
-                    hideCloseButton
-                    showProgress
-                    spotlightClicks
-                    // callback={joyrideCallback}
+                    continuous={true}
+                    disableOverlayClose={true}
+                    hideCloseButton={true}
+                    showProgress={true}
+                    spotlightClicks={true}
                     locale={{
                         back: '上一步',
                         close: '关闭',
@@ -319,7 +295,7 @@ const Page = () => {
                     <NavbarContent justify="end">
                         <NavbarItem>
                             <Button isIconOnly onPressUp={settingModal.onOpen} variant="light">
-                                <Cog8ToothIcon className="self-center w-6 h-6 bg-transparent"></Cog8ToothIcon>
+                                <Cog8ToothIcon className="self-center w-6 h-6 bg-transparent transition-opacity"></Cog8ToothIcon>
                             </Button>
                             <ThemeSwitch className="p-2"></ThemeSwitch>
                         </NavbarItem>
@@ -383,7 +359,6 @@ const Page = () => {
                 <Modal
                     backdrop="blur"
                     isOpen={trailModal.isOpen}
-                    onOpenChange={trailModal.onOpenChange}
                     isDismissable={false}
                     hideCloseButton={true}
                 >
@@ -407,7 +382,7 @@ const Page = () => {
 
                                 </ModalBody>
                                 <ModalFooter>
-                                    <Button onPress={startTrial}>开始试用</Button>
+                                    <Button onPress={() => startTrial(true)}>新手模式</Button>  <Button onPress={() => startTrial()}>开始试用</Button>
                                 </ModalFooter>
                             </>
                         )}

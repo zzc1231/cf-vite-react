@@ -4,6 +4,8 @@ import { Navigate } from 'react-router-dom'
 
 import { getStorageValue } from "@/utils/localStorage";
 
+import { Spinner } from "@heroui/spinner";
+
 export type UserStatus = 'trial' | 'normal' | 'admin' | null
 
 interface ProtectedRouteProps {
@@ -14,12 +16,18 @@ interface ProtectedRouteProps {
 }
 
 
+const loading = (
+    <div className="flex items-center justify-center h-screen w-screen flex-col">
+        <Spinner classNames={{ label: "text-foreground mt-4" }} label="加载中" size='lg' variant="wave" />
+    </div>
+)
+
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     children,
     allowedStatuses = ['normal', 'admin'],
     fallbackPath = '/trial',
-    loadingElement = <div>加载中...</div>,
+    loadingElement = loading,
 }) => {
     const [userStatus, setUserStatus] = useState<UserStatus | undefined>(undefined)
 
@@ -38,7 +46,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
                 })
                 .then(resp => resp.json())
                 .then(body => {
-                    if (body.code == 200)
+                    if (body.code == 0)
                         resolve("normal")
 
                     if (body.code == 401)

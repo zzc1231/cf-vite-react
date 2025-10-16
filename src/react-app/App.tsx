@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 
 import IndexPage from "@/pages/index";
 import DocsPage from "@/pages/docs";
@@ -8,6 +8,7 @@ import AboutPage from "@/pages/about";
 import TonePage from "@/pages/tone"
 import Trial from "@/pages/tone/trial"
 import Login from "@/pages/login";
+import Logout from "@/pages/logout";
 import ScalesTrainig from "@/pages/tone/scalesTraining";
 import CustomConfig from "@/pages/tone/customConfig";
 import { useEffect, } from "react";
@@ -42,8 +43,12 @@ function App() {
 
     return (
         <Routes>
-            <Route path="/" element={<Login />} />
-            <Route element={<Trial />} path="/trial" />
+            <Route path="/" element={<Navigate to="/login" replace />} />
+
+            <Route path="/trial1" element={<Trial />} />
+            <Route path="/trial" element={<ProtectedRoute allowedStatuses={["trial"]} fallbackPath="/scale">
+                <Trial /></ProtectedRoute>
+            } />
 
             <Route element={<TonePage />} path="/tone" />
             <Route element={<IndexPage />} path="/index" />
@@ -57,12 +62,21 @@ function App() {
                 <ScalesTrainig />
             </ProtectedRoute>} />
 
-            <Route element={<CustomConfig />} path="/config1" />
-            <Route path="/config" element={<ProtectedRoute allowedStatuses={["normal"]} fallbackPath="/login">
-                <CustomConfig /></ProtectedRoute>
-            } />
+            <Route path="/config1" element={<CustomConfig />} />
+            <Route path="/config" element={
+                <ProtectedRoute allowedStatuses={["normal"]} fallbackPath="/login">
+                    <CustomConfig />
+                </ProtectedRoute>}
+            />
 
-            <Route path="/login" element={<Login />} />
+            <Route path="/login1" element={<Login />} />
+            <Route path="/login" element={
+                <ProtectedRoute allowedStatuses={["trial"]} fallbackPath="/scale">
+                    <Login />
+                </ProtectedRoute>}
+            />
+
+            <Route path="/logout" element={<Logout />} />
         </Routes>
     );
 }

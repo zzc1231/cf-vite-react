@@ -19,12 +19,12 @@ export default function DocsPage() {
                         }}> 刷新数据</Button>
 
                         {record.map((item, index) => (
-                            <div className="flex">
+                            <div className="flex gap-1">
                                 <div>{index}</div>
-                                <div> id:{item.id}</div>
-                                <div> create_at:{item.create_at}</div>
-                                <div> date:{item.date}</div>
-                                <div> ip:{item.ip}</div>
+                                <div> id: {item.id}</div>
+                                <div> create_at: {item.create_at}</div>
+                                <div> date: {item.date}</div>
+                                <div> ip: {item.ip}</div>
                             </div>
                         ))}
                     </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import { Form } from "@heroui/form";
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
@@ -16,36 +16,12 @@ import { useNavigate } from 'react-router-dom'
 
 export default function Component() {
     const [isVisible, setIsVisible] = React.useState(false);
-    const [token, setToken, clearToken] = useLocalStorage<string | undefined>("token", "")
+    const [, setToken] = useLocalStorage<string | undefined>("token", "")
 
     const navigate = useNavigate()
     const toggleVisibility = () => setIsVisible(!isVisible);
 
-    useEffect(() => {
-        if (token) {
-            fetch("/x/Admin/User/Info",
-                {
-                    method: "GET",
-                    headers: {
-                        'Content-Type': 'application/json',
-                        "Authorization": token
-                    },
-                })
-                .then(resp => resp.json())
-                .then(body => {
-                    if (body.code == 200) {
-                        //Todo 跳走
 
-                        addToast({ title: "自动登录成功", color: "success" })
-                        navigate('/config', { replace: true }) // 替换当前 history
-                        return;
-                    }
-
-                    clearToken();
-                    addToast({ title: "登录过期,请重新登陆", color: "warning" });
-                })
-        }
-    }, [])
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -75,7 +51,7 @@ export default function Component() {
     };
 
     return (
-        <div className="flex h-full w-full items-center justify-center">
+        <div className="flex h-screen w-screen items-center justify-center">
             <div className="rounded-large flex w-full max-w-sm flex-col gap-4 px-8 pt-6 pb-10">
                 <p className="pb-4 text-left text-3xl font-semibold">
                     Log In

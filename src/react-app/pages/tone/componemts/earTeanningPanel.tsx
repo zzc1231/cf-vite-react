@@ -159,7 +159,7 @@ const Page = forwardRef<EarTrainingRef, EarTrainingProps>((props: EarTrainingPro
 
         if (!isPlaying) {
             if (playCount > 0) {
-                synth().triggerAttack(note, "8n");
+                synth().triggerAttackRelease(note, "4");
             } else {
                 synth().triggerAttackRelease(note, "4n", Tone.now() + 0.01);
             }
@@ -246,13 +246,13 @@ const Page = forwardRef<EarTrainingRef, EarTrainingProps>((props: EarTrainingPro
                 </div>
 
 
-                <Spacer y={4}></Spacer>
+                <Spacer y={2}></Spacer>
 
                 <div className="grid grid-cols-3 gap-y-1 gap-x-1 items-stretch" id="div_keyPanel">
                     {btnNameLib.map((note, index) => (
                         <Button
                             id={`btn_key_${index}`}
-                            className="h-15 text-lg font-medium"
+                            className="h-16 text-lg font-medium"
                             key={index}
                             onPressStart={() => handleNoteButtonPressStart(noteLib[index])}
                             onPressEnd={() => handleNoteButtonPressEnd(noteLib[index])}
@@ -278,7 +278,7 @@ const Page = forwardRef<EarTrainingRef, EarTrainingProps>((props: EarTrainingPro
 
                 <div className="grid grid-cols-3 gap-1">
                     <Button size="lg" onPress={() => PlayNoteOnce(props.refrenceNote)} isDisabled={isPlaying} startContent={<PlayIcon width={22} />} id="btn_playRefrence"> {props.refrenceNote} </Button>
-                    <Button size="lg" onPress={() => playMelody(melody)} isDisabled={isPlaying || melody.length == 0} startContent={<PlayCircleIcon width={22} id="btn_replay" />}> </Button>
+                    <Button size="lg" onPress={() => playMelody(melody)} isDisabled={isPlaying || melody.length == 0} startContent={<PlayCircleIcon width={22} />} id="btn_replay"> </Button>
                     <Button size="lg" onPress={() => setUserClicks([])} isDisabled={isAnswerCorrect != null} startContent={<BackspaceIcon width={22} />} id="btn_clearAnswer">  </Button>
                 </div>
             </div >
@@ -289,7 +289,7 @@ const Page = forwardRef<EarTrainingRef, EarTrainingProps>((props: EarTrainingPro
                 hideCloseButton={true}
                 isDismissable={false}
                 portalContainer={containerRef.current ?? undefined}
-                onOpenChange={readyModal.onOpenChange}
+            // onOpenChange={readyModal.onOpenChange}
 
             >
                 <ModalContent>
