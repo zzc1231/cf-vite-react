@@ -212,7 +212,7 @@ const Page = forwardRef<EarTrainingRef, EarTrainingProps>((props: EarTrainingPro
         <>
             <div className=" space-y-2  justify-center  w-full xl:min-w-[50%] " ref={containerRef}>
 
-                <div className="overflow-x-auto grid grid-flow-col auto-cols-auto gap-1 items-center " id="div_keyPanel">
+                <div className="overflow-x-auto grid grid-flow-col auto-cols-auto gap-1 items-center " id="div_anwserPanel">
                     {Array.from({ length: props.melodyLength }).map((_, index) => (
                         <div className="flex flex-col space-y-1 min-w-10" key={index}>
                             <Snippet
@@ -248,7 +248,7 @@ const Page = forwardRef<EarTrainingRef, EarTrainingProps>((props: EarTrainingPro
 
                 <Spacer y={4}></Spacer>
 
-                <div className="grid grid-cols-3 gap-y-1 gap-x-1 items-stretch">
+                <div className="grid grid-cols-3 gap-y-1 gap-x-1 items-stretch" id="div_keyPanel">
                     {btnNameLib.map((note, index) => (
                         <Button
                             id={`btn_key_${index}`}

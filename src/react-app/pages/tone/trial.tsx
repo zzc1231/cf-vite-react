@@ -90,26 +90,97 @@ const Page = () => {
 
     const initialSteps: Step[] = [
         {
-            content: "马上开始",
+            content: "开始吧！",
             placement: 'center',
             target: 'body',
         },
         {
             target: '#btn_readyPlay',
-            content: '先调整好扬声器或者耳机音量',
-            placement: 'auto',
+            content: '先调好音量哦~',
+            placement: 'top',
         },
         {
-            target: '#modal_ready',
-            content: '确认能够听清楚声音就可以开始训练了',
-            placement: 'auto',
+            target: '#btn_startTrian',
+            content: '准备好就开始训练！',
+            placement: 'top',
+        },
+
+        {
+            title: '第1个音',
+            content: "选 C",
+            target: '#btn_key_0',
+            placement: 'bottom',
         },
         {
-            content: "点击答题按钮把依次把刚才的声音答出来",
-            placement: 'auto',
-            target: '#div_keyPanel',
-            title: '答题板',
+            title: '第2个音',
+            content: "选 E",
+            target: '#btn_key_4',
+            placement: 'bottom',
         },
+        {
+            title: '第3个音',
+            content: "选 G",
+            target: '#btn_key_7',
+            placement: 'bottom',
+        },
+        {
+            title: '第4个音',
+            content: "选 B",
+            target: '#btn_key_11',
+            placement: 'bottom',
+        },
+        {
+            title: '提交答案',
+            content: "提交看看结果",
+            target: '#btn_sureAnswer',
+            placement: 'top',
+        },
+        {
+            title: '答案区',
+            content: "这里查看对错",
+            target: '#div_anwserPanel',
+            placement: 'bottom',
+        },
+
+        {
+            title: '🎉太棒了！你全都学会了🎉',
+            content: "继续看看其他功能吧",
+            placement: 'center',
+            target: 'body',
+        },
+
+        {
+            title: '播放参考音',
+            content: "忘了音高？点这里",
+            placement: 'top',
+            target: '#btn_playRefrence',
+        },
+        {
+            title: '重放题目',
+            content: "再听一遍点这个",
+            placement: 'top',
+            target: '#btn_replay',
+        },
+        {
+            title: '清除答案',
+            content: "做错了也能重来",
+            placement: 'top',
+            target: '#btn_clearAnswer',
+        },
+        {
+            title: '下一题',
+            content: "继续挑战！",
+            placement: 'center',
+            target: '#btn_nextTrain',
+        },
+
+        {
+            title: '🎉🎉🎉',
+            content: "都学会啦！练耳大师 继续加油哦～",
+            placement: 'center',
+            target: 'body',
+        },
+
     ];
 
     const [state, setState] = useState({
@@ -187,7 +258,7 @@ const Page = () => {
                     used: data.count,
                 })
                 trailModal.onClose()
-                setState({ ...state, stepsEnabled: true })
+                setState({ ...state, stepsEnabled: data.count == 0 })
             })
     }
 
@@ -215,6 +286,7 @@ const Page = () => {
                     disableOverlayClose
                     hideCloseButton
                     showProgress
+                    spotlightClicks
                     // callback={joyrideCallback}
                     locale={{
                         back: '上一步',
