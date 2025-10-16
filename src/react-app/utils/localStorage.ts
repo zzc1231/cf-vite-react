@@ -35,7 +35,7 @@ export const useLocalStorage = <T>(key: string, defaultValue: T): [T, (newValue:
     };
 
     const clear = () => {
-        setValue(defaultValue);
+        updateValue(defaultValue);
     }
 
     return [value, updateValue, clear];
