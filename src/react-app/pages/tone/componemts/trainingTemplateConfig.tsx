@@ -7,7 +7,7 @@ import { Spacer } from "@heroui/spacer";
 import { Input } from "@heroui/input";
 import { getDefaultNoteRange } from "@/utils/pitchCompare";
 import { Chip } from "@heroui/chip";
-import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@heroui/modal";
+import { Modal, ModalBody, ModalContent, ModalHeader } from "@heroui/modal";
 
 import { SpeakerWaveIcon } from "@heroicons/react/24/solid";
 import { Checkbox } from '@heroui/checkbox';
@@ -195,9 +195,6 @@ const Page = (props: TrainingTemplateConfigProps,) => {
                                     </Checkbox>
                                     <Spacer y={4}></Spacer>
                                 </ModalBody>
-                                {/* <ModalFooter>
-                                    <Button onPress={() => setTargetIndex(-1)}>关闭</Button>
-                                </ModalFooter> */}
                             </>
                         )}
                     </ModalContent>
