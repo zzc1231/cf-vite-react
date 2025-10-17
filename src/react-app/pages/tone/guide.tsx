@@ -17,7 +17,7 @@ import { ThemeSwitch } from "@/components/theme-switch";
 import EarTrainingPanel, { EarTrainingRef } from "./componemts/earTeanningPanel";
 import DefaultLayout from "@/layouts/default";
 import { Spacer } from "@heroui/spacer";
-import Joyride, { Step } from "react-joyride-react-19";
+import Joyride, { ACTIONS, CallBackProps, Events, EVENTS, STATUS, Step } from "react-joyride-react-19";
 
 interface ToneConfig {
     bpm: number;
@@ -90,24 +90,18 @@ const Page = () => {
 
     const initialSteps: Step[] = [
         {
-            content: <h2 className="text-2xl">"吧开始！"</h2>,
+            content: <h2 className="h-20">"吧开始！"</h2>,
             placement: 'center',
             target: 'body',
             title: (<h2>👋</h2>)
-
         },
         {
-            target: '#btn_readyPlay',
+            target: '#modal_ready',
             content: '先调好音量哦~',
             placement: 'top',
             disableBeacon: true
         },
-        {
-            target: '#btn_startTrian',
-            content: '准备好就开始训练！',
-            placement: 'top',
-            disableBeacon: true
-        },
+
 
         {
             title: '第1个音',
@@ -242,6 +236,22 @@ const Page = () => {
     }
 
     const onNewQuestion = () => {
+
+        setState({
+            ...state,
+            run: false,
+        });
+
+        setTimeout(() => {
+            if (state.stepIndex < 3) {
+                setState({
+                    ...state,
+                    run: true,
+                    stepIndex: 2,
+                })
+            }
+        }, 300)
+
         record.used++
 
         fetch("/done", { method: "POST" })
@@ -259,24 +269,37 @@ const Page = () => {
             })
     }
 
+
+    const handleJoyrideCallback = (data: CallBackProps) => {
+        const { action, index, status, type } = data;
+
+        if (([STATUS.FINISHED, STATUS.SKIPPED] as string[]).includes(status)) {
+            // Need to set our running state to false, so we can restart if we click start again.
+            setState({ ...state, run: false, stepIndex: 0 });
+        } else if (([EVENTS.STEP_AFTER, EVENTS.TARGET_NOT_FOUND] as Events[]).includes(type)) {
+            const nextStepIndex = index + (action === ACTIONS.PREV ? -1 : 1);
+
+
+            setState({
+                ...state,
+                stepIndex: nextStepIndex,
+            });
+        }
+
+        console.debug(type === EVENTS.TOUR_STATUS ? `${type}:${status}` : type, data);
+    }
+
     return (
         <DefaultLayout>
 
-            <style>
-                {`
-          .react-joyride__overlay,
-          .react-joyride__spotlight {
-            pointer-events: none !important;
-          }
-        `}
-            </style>
 
 
             <section className="h-full flex flex-col items-center ">
                 <Joyride
                     steps={state.steps}
+                    stepIndex={state.stepIndex}
                     run={state.run}
-                    // continuous={true}
+                    continuous={true}
                     disableOverlayClose={true}
                     hideCloseButton={true}
                     showProgress={true}
@@ -290,7 +313,7 @@ const Page = () => {
                         skip: '跳过',
                         nextLabelWithProgress: '下一步 ( {step} / {steps} )',
                     }}
-
+                    callback={handleJoyrideCallback}
                 />
 
 

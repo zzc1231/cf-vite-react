@@ -7,6 +7,7 @@ import BlogPage from "@/pages/blog";
 import AboutPage from "@/pages/about";
 import TonePage from "@/pages/tone"
 import Trial from "@/pages/tone/trial"
+import Guide from "@/pages/tone/guide"
 import Login from "@/pages/login";
 import Logout from "@/pages/logout";
 import ScalesTrainig from "@/pages/tone/scalesTraining";
@@ -51,6 +52,9 @@ function App() {
                     <Trial />
                 </ProtectedRoute>
             } />
+
+
+            <Route path="/guide" element={<Guide />} />
 
             <Route element={<TonePage />} path="/tone" />
             <Route element={<IndexPage />} path="/index" />
