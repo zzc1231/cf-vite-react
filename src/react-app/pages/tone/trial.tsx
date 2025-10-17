@@ -90,7 +90,7 @@ const Page = () => {
 
     const initialSteps: Step[] = [
         {
-            content: "开始吧！",
+            content: "吧开始！",
             placement: 'center',
             target: 'body',
             title: "👋"
@@ -100,49 +100,55 @@ const Page = () => {
             target: '#btn_readyPlay',
             content: '先调好音量哦~',
             placement: 'top',
-
+            disableBeacon: true
         },
         {
             target: '#btn_startTrian',
             content: '准备好就开始训练！',
             placement: 'top',
+            disableBeacon: true
         },
 
         {
             title: '第1个音',
             content: "选 C",
             target: '#btn_key_0',
-            placement: 'bottom',
+            hideBackButton: true,
+            disableBeacon: true,
+            spotlightClicks: true
         },
         {
             title: '第2个音',
             content: "选 E",
             target: '#btn_key_4',
-            placement: 'bottom',
+            disableBeacon: true
         },
         {
             title: '第3个音',
             content: "选 G",
             target: '#btn_key_7',
-            placement: 'bottom',
+            disableBeacon: true
         },
         {
             title: '第4个音',
             content: "选 B",
             target: '#btn_key_11',
-            placement: 'bottom',
+            disableBeacon: true
         },
         {
             title: '提交答案',
             content: "提交看看结果",
             target: '#btn_sureAnswer',
-            placement: 'top',
+            hideBackButton: true,
+            disableBeacon: true
         },
         {
             title: '答案区',
             content: "这里查看对错",
             target: '#div_anwserPanel',
             placement: 'bottom',
+            hideBackButton: true,
+            disableBeacon: true
         },
 
         {
@@ -173,7 +179,7 @@ const Page = () => {
         {
             title: '下一题',
             content: "继续挑战！",
-            placement: 'center',
+            placement: 'top',
             target: '#btn_nextTrain',
         },
 
@@ -187,8 +193,8 @@ const Page = () => {
     ];
 
     const [state, setState] = useState({
-        stepsEnabled: false,
-        initialStep: 0,
+        run: false,
+        stepIndex: 0,
         steps: initialSteps,
     });
 
@@ -249,24 +255,36 @@ const Page = () => {
                 record.used = data.count;
 
                 trailModal.onClose()
-                setState({ ...state, stepsEnabled: tutorial ? true : data.count == 0 })
+                setState({ ...state, run: tutorial ? true : data.count == 0 })
             })
     }
 
     return (
         <DefaultLayout>
+
+            <style>
+                {`
+          .react-joyride__overlay,
+          .react-joyride__spotlight {
+            pointer-events: none !important;
+          }
+        `}
+            </style>
+
+
             <section className="h-full flex flex-col items-center ">
                 <Joyride
                     steps={state.steps}
-                    run={state.stepsEnabled}
-                    continuous={true}
+                    run={state.run}
+                    // continuous={true}
                     disableOverlayClose={true}
                     hideCloseButton={true}
                     showProgress={true}
                     spotlightClicks={true}
+                    spotlightPadding={2}
                     locale={{
                         back: '上一步',
-                        close: '关闭',
+                        close: '会了',
                         last: '完成',
                         next: '下一步',
                         skip: '跳过',
@@ -303,7 +321,7 @@ const Page = () => {
                 </Navbar>
                 <div className="flex flex-col  w-full  px-4 pt-2 gap-y-6">
 
-                    <Alert description={`今日剩余次数：${dailyLimit - record.used}`} color="default" variant="flat" />
+                    <Alert title={`剩余次数：${dailyLimit - record.used}`} color="default" variant="flat" />
 
                     {!trailModal.isOpen && record.used < dailyLimit && <EarTrainingPanel
                         ref={earRef}

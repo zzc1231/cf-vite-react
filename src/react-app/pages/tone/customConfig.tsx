@@ -103,6 +103,7 @@ const Page = () => {
                         templateName={config.templateName}
                         customKeyNames={config.customKeyNames}
                         customKeyNotes={config.customKeyNotes}
+                        customKeyEnable={config.customKeyEnable}
                     />
                     <Spacer y={4}></Spacer>
                     <Button className="w-full" onPress={handleSave}> Save</Button>

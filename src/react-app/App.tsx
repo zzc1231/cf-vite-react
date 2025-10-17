@@ -46,8 +46,10 @@ function App() {
             <Route path="/" element={<Navigate to="/login" replace />} />
 
             <Route path="/trial1" element={<Trial />} />
-            <Route path="/trial" element={<ProtectedRoute allowedStatuses={["trial"]} fallbackPath="/scale">
-                <Trial /></ProtectedRoute>
+            <Route path="/trial" element={
+                <ProtectedRoute allowedStatuses={["trial"]} fallbackPath="/scale">
+                    <Trial />
+                </ProtectedRoute>
             } />
 
             <Route element={<TonePage />} path="/tone" />
