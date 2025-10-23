@@ -333,9 +333,11 @@ const Page = () => {
                 trailModal.onClose()
 
                 if (tutorial || data.count == 0) {
-                    requestAnimationFrame(() => {
-                        setState({ ...state, run: true })
-                    })
+                    setTimeout(() => {
+                        requestAnimationFrame(() => {
+                            setState({ ...state, run: true })
+                        })
+                    }, 400)
                 }
 
             })
