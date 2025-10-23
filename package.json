@@ -23,6 +23,7 @@
         "@heroui/checkbox": "^2.3.27",
         "@heroui/chip": "^2.2.22",
         "@heroui/code": "2.2.20",
+        "@heroui/divider": "^2.2.20",
         "@heroui/dropdown": "2.3.26",
         "@heroui/input": "2.4.27",
         "@heroui/kbd": "2.2.21",
@@ -58,6 +59,7 @@
     "devDependencies": {
         "@cloudflare/vite-plugin": "1.7.5",
         "@eslint/js": "9.29.0",
+        "@iconify/react": "^6.0.2",
         "@types/node": "24.0.4",
         "@types/react": "19.0.10",
         "@types/react-dom": "19.0.4",

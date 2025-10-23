@@ -14,7 +14,6 @@ import { Navbar, NavbarContent, NavbarItem } from "@heroui/navbar";
 
 import { ThemeSwitch } from "@/components/theme-switch";
 import EarTrainingPanel, { EarTrainingRef } from "./componemts/earTeanningPanel";
-import BlankLayout from "@/layouts/blank";
 
 interface ToneConfig {
     bpm: number;
@@ -124,7 +123,7 @@ const Page = () => {
 
 
     return (
-        <BlankLayout>
+        <>
             <section className="h-full flex flex-col items-center  gap-4">
                 <Navbar>
                     <NavbarContent justify="center">
@@ -226,7 +225,7 @@ const Page = () => {
                     </ModalContent>
                 </Modal>
             </section>
-        </BlankLayout>
+        </>
     );
 }
 

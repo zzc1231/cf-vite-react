@@ -36,6 +36,8 @@ export interface EarTrainingProps {
     }) => void;
 
     onNewQuestion?: () => void
+
+    onPressKeyNote?: (note: string) => void
 }
 
 // ✅ 子组件对外暴露的方法类型
@@ -156,6 +158,8 @@ const Page = forwardRef<EarTrainingRef, EarTrainingProps>((props: EarTrainingPro
         if (userClicks.length < melody.length) {
             setUserClicks((prevClicks) => [...prevClicks, note]);
         }
+
+        props.onPressKeyNote && props.onPressKeyNote(note);
 
         if (!isPlaying) {
             if (playCount > 0) {

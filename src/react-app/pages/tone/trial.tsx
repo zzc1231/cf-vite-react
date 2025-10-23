@@ -15,9 +15,9 @@ import { Navbar, NavbarContent, NavbarItem } from "@heroui/navbar";
 
 import { ThemeSwitch } from "@/components/theme-switch";
 import EarTrainingPanel, { EarTrainingRef } from "./componemts/earTeanningPanel";
-import DefaultLayout from "@/layouts/default";
 import { Spacer } from "@heroui/spacer";
 import Joyride, { Step } from "react-joyride-react-19";
+import { useNavigate } from 'react-router-dom'
 
 interface ToneConfig {
     bpm: number;
@@ -87,6 +87,7 @@ const Page = () => {
     const [successRate, setSuccessRate] = useState<number>(0);
 
     const earRef = useRef<EarTrainingRef>(null);
+    const navigate = useNavigate()
 
     const initialSteps: Step[] = [
         {
@@ -255,12 +256,17 @@ const Page = () => {
                 record.used = data.count;
 
                 trailModal.onClose()
-                setState({ ...state, run: tutorial ? true : data.count == 0 })
+
+                navigate("/guide")
+
+                requestAnimationFrame(() => {
+                    setState({ ...state, run: tutorial ? true : data.count == 0 })
+                })
             })
     }
 
     return (
-        <DefaultLayout>
+        <>
 
             <style>
                 {`
@@ -469,7 +475,7 @@ const Page = () => {
 
 
             </section>
-        </DefaultLayout >
+        </ >
     );
 }
 

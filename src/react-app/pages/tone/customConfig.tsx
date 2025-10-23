@@ -1,7 +1,6 @@
 'use client';
 
 import TrainingTemplateConfig, { TrainingTemplateConfigProps } from "./componemts/trainingTemplateConfig";
-import Layout from "@/layouts/default";
 import { addToast, closeToast } from "@heroui/toast";
 import { CheckCircleIcon } from "@heroicons/react/24/solid";
 import { Spacer } from "@heroui/spacer";
@@ -96,7 +95,7 @@ const Page = () => {
 
 
     return (
-        <Layout>
+        <>
             <section className="h-full flex flex-col items-center  gap-4">
                 <div className=" space-y-2  justify-center w-full  px-4 pt-2">
                     <TrainingTemplateConfig onConfigChange={onConfigChange}
@@ -109,7 +108,7 @@ const Page = () => {
                     <Button className="w-full" onPress={handleSave}> Save</Button>
                 </div >
             </section>
-        </Layout>
+        </>
     );
 }
 

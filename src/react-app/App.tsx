@@ -18,6 +18,8 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 
 
 import FingerprintJS from '@fingerprintjs/fingerprintjs';
+import DefaultLayout from "./layouts/default";
+import BlankLayout from "./layouts/blank";
 
 function App() {
 
@@ -46,34 +48,68 @@ function App() {
         <Routes>
             <Route path="/" element={<Navigate to="/login" replace />} />
 
-            <Route path="/trial1" element={<Trial />} />
-            <Route path="/trial" element={
-                <ProtectedRoute allowedStatuses={["trial"]} fallbackPath="/scale">
-                    <Trial />
-                </ProtectedRoute>
-            } />
+            <Route element={<DefaultLayout />}>
+                <Route path="/trial" element={
+                    <ProtectedRoute allowedStatuses={["trial"]} fallbackPath="/scale">
+                        <Trial />
+                    </ProtectedRoute>
+                } />
+                <Route path="/trial1" element={<Trial />} />
 
 
-            <Route path="/guide" element={<Guide />} />
+                <Route path="/scale1" element={<ScalesTrainig />} />
+                <Route path="/scale" element={<ProtectedRoute allowedStatuses={["normal"]} fallbackPath="/login">
+                    <ScalesTrainig />
+                </ProtectedRoute>} />
 
-            <Route element={<TonePage />} path="/tone" />
-            <Route element={<IndexPage />} path="/index" />
-            <Route element={<DocsPage />} path="/docs" />
-            <Route element={<PricingPage />} path="/pricing" />
-            <Route element={<BlogPage />} path="/blog" />
-            <Route element={<AboutPage />} path="/about" />
+                <Route path="/config1" element={<CustomConfig />} />
+                <Route path="/config" element={
+                    <ProtectedRoute allowedStatuses={["normal"]} fallbackPath="/login">
+                        <CustomConfig />
+                    </ProtectedRoute>}
+                />
 
-            <Route path="/scale1" element={<ScalesTrainig />} />
-            <Route path="/scale" element={<ProtectedRoute allowedStatuses={["normal"]} fallbackPath="/login">
-                <ScalesTrainig />
-            </ProtectedRoute>} />
+                <Route path="/guide" element={<Guide />} />
 
-            <Route path="/config1" element={<CustomConfig />} />
-            <Route path="/config" element={
-                <ProtectedRoute allowedStatuses={["normal"]} fallbackPath="/login">
-                    <CustomConfig />
-                </ProtectedRoute>}
-            />
+                <Route path="/tone" element={<TonePage />} />
+                <Route path="/index" element={<IndexPage />} />
+                <Route path="/docs" element={<DocsPage />} />
+                <Route path="/pricing" element={<PricingPage />} />
+                <Route path="/blog" element={<BlogPage />} />
+                <Route path="/about" element={<AboutPage />} />
+            </Route>
+
+
+            <Route element={<BlankLayout />}>
+                <Route path="/s/trial" element={
+                    <ProtectedRoute allowedStatuses={["trial"]} fallbackPath="/scale">
+                        <Trial />
+                    </ProtectedRoute>
+                } />
+                <Route path="/s/trial1" element={<Trial />} />
+
+
+                <Route path="/s/scale1" element={<ScalesTrainig />} />
+                <Route path="/s/scale" element={<ProtectedRoute allowedStatuses={["normal"]} fallbackPath="/login">
+                    <ScalesTrainig />
+                </ProtectedRoute>} />
+
+                <Route path="/s/config1" element={<CustomConfig />} />
+                <Route path="'s/config" element={
+                    <ProtectedRoute allowedStatuses={["normal"]} fallbackPath="/login">
+                        <CustomConfig />
+                    </ProtectedRoute>}
+                />
+
+                <Route path="/s/tone" element={<TonePage />} />
+                <Route path="/s/index" element={<IndexPage />} />
+                <Route path="/s/docs" element={<DocsPage />} />
+                <Route path="/s/pricing" element={<PricingPage />} />
+                <Route path="/s/blog" element={<BlogPage />} />
+                <Route path="/s/about" element={<AboutPage />} />
+            </Route>
+
+
 
             <Route path="/login1" element={<Login />} />
             <Route path="/login" element={

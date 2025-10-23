@@ -5,13 +5,14 @@ import { Form } from "@heroui/form";
 import { Button } from "@heroui/button";
 import { Input } from "@heroui/input";
 
-import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import { Link } from "@heroui/link";
 import { Checkbox } from "@heroui/checkbox";
 import { addToast } from "@heroui/toast";
 import { useLocalStorage } from "@/utils/localStorage";
 
 import { useNavigate } from 'react-router-dom'
+import { Divider } from "@heroui/divider";
+import { Icon } from "@iconify/react";
 
 
 export default function Component() {
@@ -61,6 +62,7 @@ export default function Component() {
                 </p>
                 <Form className="flex flex-col gap-4" validationBehavior="native" onSubmit={handleSubmit}>
                     <Input
+                        size="lg"
                         isRequired
                         label="用户名"
                         labelPlacement="outside"
@@ -70,18 +72,19 @@ export default function Component() {
                         variant="bordered"
                     />
                     <Input
+                        size="lg"
                         isRequired
                         endContent={
                             <button type="button" onClick={toggleVisibility}>
                                 {isVisible ? (
-                                    <EyeSlashIcon
-                                        width={22}
+                                    <Icon
                                         className="text-default-400 pointer-events-none text-2xl"
+                                        icon="solar:eye-closed-linear"
                                     />
                                 ) : (
-                                    <EyeIcon
-                                        width={22}
+                                    <Icon
                                         className="text-default-400 pointer-events-none text-2xl"
+                                        icon="solar:eye-bold"
                                     />
                                 )}
                             </button>
@@ -94,22 +97,42 @@ export default function Component() {
                         variant="bordered"
                     />
                     <div className="flex w-full items-center justify-between px-1 py-2">
-                        <Checkbox defaultSelected name="remember" size="sm" value={"true"}>
+                        <Checkbox defaultSelected name="remember" size="md" value={"true"}>
                             记住我
                         </Checkbox>
-                        <Link className="text-default-500" href="#" size="sm">
+                        <Link className="text-default-500" href="#" size="md">
                             Forgot password?
                         </Link>
                     </div>
-                    <Button className="w-full" color="primary" type="submit">
+                    <Button className="w-full" size="lg" color="primary" type="submit">
                         登录
                     </Button>
                 </Form>
                 <p className="text-small text-center">
-                    <Link href="/trial" size="sm">
+                    <Link href="/guide" size="md">
                         试用
                     </Link>
                 </p>
+
+                <div className="flex items-center gap-4 py-2">
+                    <Divider className="flex-1" />
+                    <p className="text-tiny text-default-500 shrink-0">OR</p>
+                    <Divider className="flex-1" />
+                </div>
+                <div className="flex flex-col gap-2">
+                    <Button
+                        startContent={<Icon icon="flat-color-icons:google" width={24} />}
+                        variant="bordered"
+                    >
+                        Continue with Google
+                    </Button>
+                    <Button
+                        startContent={<Icon className="text-default-500" icon="fe:github" width={24} />}
+                        variant="bordered"
+                    >
+                        Continue with Github
+                    </Button>
+                </div>
             </div>
         </div>
     );

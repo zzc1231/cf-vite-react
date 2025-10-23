@@ -5,6 +5,7 @@ import { Navigate } from 'react-router-dom'
 import { getStorageValue } from "@/utils/localStorage";
 
 import { Spinner } from "@heroui/spinner";
+import { addToast } from '@heroui/toast';
 
 export type UserStatus = 'trial' | 'normal' | 'admin' | null
 
@@ -51,6 +52,11 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
                     if (body.code == 401)
                         resolve("trial")
+
+                    resolve("trial")
+                })
+                .catch(e => {
+                    addToast({ title: "发生网络异常", description: e, color: "danger" })
                 })
         })
     }

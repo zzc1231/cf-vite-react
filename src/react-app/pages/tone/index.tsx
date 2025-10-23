@@ -14,7 +14,6 @@ import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from "@herou
 import { Navbar, NavbarContent, NavbarItem } from "@heroui/navbar";
 import { Spacer } from "@heroui/spacer";
 import { ThemeSwitch } from "@/components/theme-switch";
-import BlankLayout from "@/layouts/blank";
 
 interface ToneConfig {
     bpm: number;
@@ -207,7 +206,7 @@ const Page = () => {
 
     }
     return (
-        <BlankLayout>
+        <>
             <section className="h-full flex flex-col items-center  gap-4">
                 <Navbar>
                     <NavbarContent justify="center">
@@ -352,7 +351,7 @@ const Page = () => {
                     </ModalContent>
                 </Modal>
             </section>
-        </BlankLayout>
+        </>
     );
 }
 

@@ -15,7 +15,6 @@ import { Navbar, NavbarContent, NavbarItem } from "@heroui/navbar";
 
 import { ThemeSwitch } from "@/components/theme-switch";
 import EarTrainingPanel, { EarTrainingRef } from "./componemts/earTeanningPanel";
-import DefaultLayout from "@/layouts/default";
 import { Spacer } from "@heroui/spacer";
 import Joyride, { ACTIONS, CallBackProps, Events, EVENTS, STATUS, Step } from "react-joyride-react-19";
 
@@ -90,18 +89,39 @@ const Page = () => {
 
     const initialSteps: Step[] = [
         {
-            content: <h2 className="h-20">"吧开始！"</h2>,
+            content: (<div>
+                <p className="h-20">"接下来"</p>
+                <p>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam pulvinar risus non
+                    risus hendrerit venenatis. Pellentesque sit amet hendrerit risus, sed porttitor
+                    quam.
+                </p>
+            </div>
+            ),
             placement: 'center',
             target: 'body',
-            title: (<h2>👋</h2>)
+            title: (<p>👋</p>)
         },
         {
             target: '#modal_ready',
-            content: '先调好音量哦~',
+            content: '先调好音量，保证能够听到声音哦~',
             placement: 'top',
-            disableBeacon: true
+            hideBackButton: true,
+            disableBeacon: true,
+            spotlightClicks: true,
+            hideFooter: true,
         },
-
+        {
+            target: 'body',
+            content: '仔细听题,然后回答问题',
+            placement: 'center',
+            hideBackButton: true,
+            disableBeacon: true,
+            spotlightClicks: true,
+            locale: {
+                next: "去答题",
+            }
+        },
 
         {
             title: '第1个音',
@@ -109,38 +129,51 @@ const Page = () => {
             target: '#btn_key_0',
             hideBackButton: true,
             disableBeacon: true,
-            spotlightClicks: true
+            spotlightClicks: true,
+            hideFooter: true,
         },
         {
             title: '第2个音',
             content: "选 E",
             target: '#btn_key_4',
-            disableBeacon: true
+            hideBackButton: true,
+            disableBeacon: true,
+            spotlightClicks: true,
+            hideFooter: true,
         },
         {
             title: '第3个音',
             content: "选 G",
             target: '#btn_key_7',
-            disableBeacon: true
+            hideBackButton: true,
+            disableBeacon: true,
+            spotlightClicks: true,
+            hideFooter: true,
         },
         {
             title: '第4个音',
             content: "选 B",
             target: '#btn_key_11',
-            disableBeacon: true
+            hideBackButton: true,
+            disableBeacon: true,
+            spotlightClicks: true,
+            hideFooter: true,
         },
         {
             title: '提交答案',
             content: "提交看看结果",
             target: '#btn_sureAnswer',
+            placement: 'bottom',
             hideBackButton: true,
-            disableBeacon: true
+            disableBeacon: true,
+            spotlightClicks: true,
+            hideFooter: true,
         },
         {
             title: '答案区',
             content: "这里查看对错",
             target: '#div_anwserPanel',
-            placement: 'bottom',
+            placement: 'top',
             hideBackButton: true,
             disableBeacon: true
         },
@@ -157,6 +190,7 @@ const Page = () => {
             content: "忘了音高？点这里",
             placement: 'top',
             target: '#btn_playRefrence',
+            hideBackButton: true,
         },
         {
             title: '重放题目',
@@ -233,28 +267,60 @@ const Page = () => {
 
             earRef.current?.newQuestion();
         }
+
+        if (state.run) {
+            requestAnimationFrame(() => {
+                setState({ ...state, stepIndex: state.stepIndex + 1, });
+            });
+        }
     }
 
     const onNewQuestion = () => {
+        let starIndex = state.steps.findIndex(item => item.target == '#btn_key_0');
 
-        setState({
-            ...state,
-            run: false,
-        });
+        console.debug("onNewQuestion", starIndex)
 
-        setTimeout(() => {
-            if (state.stepIndex < 3) {
-                setState({
-                    ...state,
-                    run: true,
-                    stepIndex: 2,
-                })
-            }
-        }, 300)
-
+        if (state.stepIndex <= starIndex) {
+            requestAnimationFrame(() => {
+                setState({ ...state, stepIndex: starIndex, });
+            });
+        }
         record.used++
 
         fetch("/done", { method: "POST" })
+    }
+
+    const onPressKeyNote = (note: string) => {
+        let starIndex = state.steps.findIndex(item => item.target == '#btn_key_0');
+
+        if (state.stepIndex >= starIndex
+            && state.stepIndex <= starIndex + 4
+            && state.run
+        ) {
+            let nextStep = starIndex + 1;
+            switch (note) {
+                case "C4":
+                    nextStep += 0;
+                    break
+                case "E4":
+                    nextStep += 1;
+                    break
+                case "G4":
+                    nextStep += 2;
+                    break
+                case "B4":
+                    nextStep += 3;
+                    break
+            }
+
+            console.debug("onPressKeyNote", note, nextStep, state.steps[nextStep])
+
+
+
+            requestAnimationFrame(() => {
+                setState({ ...state, run: true, stepIndex: nextStep, });
+            });
+        }
     }
 
 
@@ -265,49 +331,54 @@ const Page = () => {
                 record.used = data.count;
 
                 trailModal.onClose()
-                setState({ ...state, run: tutorial ? true : data.count == 0 })
+
+                if (tutorial || data.count == 0) {
+                    requestAnimationFrame(() => {
+                        setState({ ...state, run: true })
+                    })
+                }
+
             })
     }
 
 
     const handleJoyrideCallback = (data: CallBackProps) => {
         const { action, index, status, type } = data;
+        console.debug(data)
 
         if (([STATUS.FINISHED, STATUS.SKIPPED] as string[]).includes(status)) {
             // Need to set our running state to false, so we can restart if we click start again.
             setState({ ...state, run: false, stepIndex: 0 });
+
         } else if (([EVENTS.STEP_AFTER, EVENTS.TARGET_NOT_FOUND] as Events[]).includes(type)) {
             const nextStepIndex = index + (action === ACTIONS.PREV ? -1 : 1);
 
-
-            setState({
-                ...state,
-                stepIndex: nextStepIndex,
+            // state.stepIndex = nextStepIndex;
+            requestAnimationFrame(() => {
+                setState({ ...state, stepIndex: nextStepIndex, });
             });
+
         }
 
         console.debug(type === EVENTS.TOUR_STATUS ? `${type}:${status}` : type, data);
     }
 
     return (
-        <DefaultLayout>
-
-
-
+        <>
             <section className="h-full flex flex-col items-center ">
                 <Joyride
                     steps={state.steps}
                     stepIndex={state.stepIndex}
                     run={state.run}
-                    continuous={true}
+                    // continuous={true}
                     disableOverlayClose={true}
                     hideCloseButton={true}
                     showProgress={true}
                     spotlightClicks={true}
-                    spotlightPadding={2}
+                    spotlightPadding={5}
                     locale={{
                         back: '上一步',
-                        close: '会了',
+                        close: '好的',
                         last: '完成',
                         next: '下一步',
                         skip: '跳过',
@@ -315,9 +386,6 @@ const Page = () => {
                     }}
                     callback={handleJoyrideCallback}
                 />
-
-
-
                 <Navbar>
                     <NavbarContent justify="center">
                         <NavbarItem >
@@ -356,6 +424,7 @@ const Page = () => {
                         customKeyNames={scaleMap.get(config?.scaleName)?.keyLibrary}
                         onAnswer={onAnswer}
                         onNewQuestion={onNewQuestion}
+                        onPressKeyNote={onPressKeyNote}
                     ></EarTrainingPanel>
                     }
 
@@ -492,7 +561,7 @@ const Page = () => {
 
 
             </section>
-        </DefaultLayout >
+        </ >
     );
 }
 
