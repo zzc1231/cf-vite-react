@@ -2,7 +2,7 @@
 
 ###
 # @name Login1Result
-Post  https://hero.z2c.shop/x/todo/User/Login1?code=1
+Post  https://hero.z2c.lol/x/todo/User/Login1?code=1
 Content-Type: application/json
 
 
@@ -14,7 +14,7 @@ Content-Type: application/json
 
 
 ### 
-get  https://hero.z2c.shop/x/Admin/User/Info
+get  https://hero.z2c.lol/x/Admin/User/Info
 Content-Type: application/json
 Authorization:  {{token}}
 
@@ -32,7 +32,7 @@ Authorization: Bearer {{token}}
 
 
 ###
-Get  https://hero.z2c.shop/x/todo/Group/Explore?PageSize=1&PageIndex=2
+Get  https://hero.z2c.lol/x/todo/Group/Explore?PageSize=1&PageIndex=2
 Content-Type: application/json
 
 
@@ -40,29 +40,29 @@ Content-Type: application/json
 ###
 
 
-https://h-7100.z2c.shop/todo/Group/Explore?PageSize=1&PageIndex=2
+https://h-7100.z2c.lol/todo/Group/Explore?PageSize=1&PageIndex=2
 
 
 
-https://h-7100.z2c.shop/Todo/Group/Explore
+https://h-7100.z2c.lol/Todo/Group/Explore
 
 
 
 
 
 ###
-get  https://hero.z2c.shop/x/Admin/Parameter?userid=1&PageSize=100&PageIndex=1
+get  https://hero.z2c.lol/x/Admin/Parameter?userid=1&PageSize=100&PageIndex=1
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
 ###
-get  https://hero.z2c.shop/x/Admin/Parameter?userid=1&category=ear
+get  https://hero.z2c.lol/x/Admin/Parameter?userid=1&category=ear
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
 
 ###
-Post  https://hero.z2c.shop/x/Admin/Parameter
+Post  https://hero.z2c.lol/x/Admin/Parameter
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
