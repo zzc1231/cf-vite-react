@@ -109,8 +109,8 @@ export default function Component() {
                     </Button>
                 </Form>
                 <p className="text-small text-center">
-                    <Link href="/guide" size="md">
-                        试用
+                    <Link href="/guide" size="md" className="tracking-widest">
+                        免费试用
                     </Link>
                 </p>
 

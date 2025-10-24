@@ -120,6 +120,7 @@ const Page = () => {
             spotlightClicks: true,
             locale: {
                 next: "去答题",
+                close: "去答题"
             }
         },
 
@@ -171,7 +172,7 @@ const Page = () => {
         },
         {
             title: '答案区',
-            content: "这里查看对错",
+            content: "在这里对比一下,找出答错的音",
             target: '#div_anwserPanel',
             placement: 'top',
             hideBackButton: true,
@@ -194,19 +195,19 @@ const Page = () => {
         },
         {
             title: '重放题目',
-            content: "再听一遍点这个",
+            content: "没听清就再放一次",
             placement: 'top',
             target: '#btn_replay',
         },
         {
             title: '清除答案',
-            content: "做错了也能重来",
+            content: "不小心按错也可以重来",
             placement: 'top',
             target: '#btn_clearAnswer',
         },
         {
             title: '下一题',
-            content: "继续挑战！",
+            content: "这题答错不要紧，重要的是下一题！",
             placement: 'top',
             target: '#btn_nextTrain',
         },
@@ -333,11 +334,11 @@ const Page = () => {
                 trailModal.onClose()
 
                 if (tutorial || data.count == 0) {
-                    setTimeout(() => {
-                        requestAnimationFrame(() => {
-                            setState({ ...state, run: true })
-                        })
-                    }, 400)
+
+                    requestAnimationFrame(() => {
+                        setState({ ...state, run: true })
+                    })
+
                 }
 
             })
