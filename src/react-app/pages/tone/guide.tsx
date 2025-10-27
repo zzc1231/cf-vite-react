@@ -448,7 +448,7 @@ const Page = () => {
                             <>
                                 <ModalHeader className="flex flex-col gap-1">使用说明</ModalHeader>
                                 <ModalBody>
-                                    <Alert title="试用" description="明天再来" color="warning" variant="flat" />
+                                    <Alert title="次数已用尽" description="今日的体验次数已用尽" color="warning" variant="flat" />
                                     <p>
                                         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam pulvinar risus non
                                         risus hendrerit venenatis. Pellentesque sit amet hendrerit risus, sed porttitor

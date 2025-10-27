@@ -1,6 +1,6 @@
 // src/components/ProtectedRoute.tsx
 import React, { useEffect, useState, ReactNode } from 'react'
-import { Navigate } from 'react-router-dom'
+import { Navigate, useLocation } from 'react-router-dom'
 
 import { getStorageValue } from "@/utils/localStorage";
 
@@ -37,6 +37,11 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     async function fetchUserStatus(): Promise<UserStatus> {
         return new Promise(resolve => {
             const token = getStorageValue<string>("token", "")
+            if (!token) {
+                resolve("trial")
+                return
+            }
+
             fetch("/x/Admin/User/Info",
                 {
                     method: "GET",
@@ -68,7 +73,15 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     if (userStatus === undefined) return <>{loadingElement}</> // 等待身份判断
 
     // 判断是否允许访问
-    if (!allowedStatuses.includes(userStatus)) return <Navigate to={fallbackPath} replace />
+    if (!allowedStatuses.includes(userStatus)) {
+        const local = useLocation()
+        const redirectTo = encodeURIComponent(local.pathname + local.search);
+
+        if (fallbackPath == "/login")
+            return <Navigate to={`${fallbackPath}?redirectTo=${redirectTo}`} />;
+
+        return <Navigate to={fallbackPath} replace />;
+    }
 
     return <>{children}</>
 }

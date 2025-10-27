@@ -27,6 +27,8 @@ export interface EarTrainingProps {
     /** 自定义键盘按键名称（选传，不传则默认12平均律） */
     customKeyNames?: React.ReactNode[];
 
+    questionList: Array<string[]>;
+
     /** 回调事件：回答提交时触发 */
     onAnswer?: (params: {
         /**是否正确 */
@@ -58,6 +60,7 @@ const Page = forwardRef<EarTrainingRef, EarTrainingProps>((props: EarTrainingPro
     const [isAnswerCorrect, setIsAnswerCorrect] = useState<boolean | null>(null);
 
     const [playCount, setPlayCount] = useState<number>(0);
+    const [questionIndex, setQuestionIndex] = useState<number | undefined>(undefined);
 
     const btnNameLib = props.customKeyNames || ['C', 'C# _ Db', 'D', 'D# _ Eb', 'E', 'F', 'F# _ Gb', 'G', 'G# _ Ab', 'A', 'A# _ Bb', 'B']
     const noteLib = ['C4', 'C#4', 'D4', 'D#4', 'E4', 'F4', 'F#4', 'G4', 'G#4', 'A4', 'A#4', 'B4']
@@ -103,19 +106,42 @@ const Page = forwardRef<EarTrainingRef, EarTrainingProps>((props: EarTrainingPro
     }
 
     const startExercise = () => {
-        // 生成随机旋律
-        const randomMelody: string[] = [];
-        for (let i = 0; i < props.melodyLength; i++) {
-            const randomIndex = Math.floor(Math.random() * props.noteRange.length);
-            randomMelody.push(props.noteRange[randomIndex]);
+        let index = questionIndex;
+        if (!index) {
+            index = 0
+        } else {
+            index++;
         }
 
-        setMelody(randomMelody);
+
+        //结束
+        if (props.questionList.length <= index) {
+            return;
+        }
+
+        setQuestionIndex(index);
+
+        let question: string[] = props.questionList[index]
+
+        if (!question || question.length == 0) {
+
+            // 生成随机旋律
+            const randomMelody: string[] = [];
+            for (let i = 0; i < props.melodyLength; i++) {
+                const randomIndex = Math.floor(Math.random() * props.noteRange.length);
+                randomMelody.push(props.noteRange[randomIndex]);
+            }
+
+            question = randomMelody;
+        }
+
+        setQuestionIndex(index);
+        setMelody(question);
         setUserClicks([]);
         setIsAnswerCorrect(null)
-        playMelody(randomMelody);
+        playMelody(question);
 
-        props.onNewQuestion && props.onNewQuestion(randomMelody);
+        props.onNewQuestion && props.onNewQuestion(question);
     };
 
 

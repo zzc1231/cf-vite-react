@@ -12,10 +12,6 @@ import Login from "@/pages/login";
 import Logout from "@/pages/logout";
 import ScalesTrainig from "@/pages/tone/scalesTraining";
 import CustomConfig from "@/pages/tone/customConfig";
-import CourseDetail from "@/pages/course/course-detail";
-
-import Unit1 from "@/pages/course/unit/unit1";
-
 
 import { useEffect, } from "react";
 
@@ -23,8 +19,9 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 
 
 import FingerprintJS from '@fingerprintjs/fingerprintjs';
-import DefaultLayout from "./layouts/default";
-import BlankLayout from "./layouts/blank";
+import DefaultLayout from "@/layouts/default";
+import BlankLayout from "@/layouts/blank";
+import CoursesWrapper from "@/pages/courses/CoursesWrapper";
 
 function App() {
 
@@ -82,9 +79,10 @@ function App() {
                 <Route path="/pricing" element={<PricingPage />} />
                 <Route path="/blog" element={<BlogPage />} />
                 <Route path="/about" element={<AboutPage />} />
-                <Route path="/course" element={<CourseDetail title={"java 变成"} desc={"宇宙追强"} />} />
-                <Route path="/course/1" element={<Unit1 />} />
 
+
+                {/* === 动态课程路由 === */}
+                <Route path="/courses/*" element={<CoursesWrapper />} />
 
             </Route>
 

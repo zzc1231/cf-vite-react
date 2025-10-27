@@ -10,7 +10,7 @@ import { Checkbox } from "@heroui/checkbox";
 import { addToast } from "@heroui/toast";
 import { useLocalStorage } from "@/utils/localStorage";
 
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { Divider } from "@heroui/divider";
 import { Icon } from "@iconify/react";
 
@@ -22,11 +22,12 @@ export default function Component() {
     const navigate = useNavigate()
     const toggleVisibility = () => setIsVisible(!isVisible);
 
-
+    // 从 URL 查询参数读取 redirectTo
+    const searchParams = new URLSearchParams(useLocation().search);
+    const redirectTo = searchParams.get('redirectTo') ? decodeURIComponent(searchParams.get('redirectTo')!) : '/scale'; // 默认到首页
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-
 
         const data = Object.fromEntries(new FormData(event.currentTarget));
         const json = { ...data, remember: !!data.remember };
@@ -41,7 +42,7 @@ export default function Component() {
                 if (body?.data?.token) {
                     setToken(body?.data?.token)
                     addToast({ title: "登录成功", color: "success" })
-                    navigate('/config', { replace: true }) // 替换当前 history
+                    navigate(redirectTo, { replace: true }) // 替换当前 history
                     return;
                 }
 

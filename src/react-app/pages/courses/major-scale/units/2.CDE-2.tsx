@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@heroui/button';
-import { Alert } from "@heroui/alert";
+
 
 import { useEffect, useRef, useState } from "react";
 import { Cog8ToothIcon } from "@heroicons/react/24/solid";
@@ -13,6 +13,14 @@ import { ThemeSwitch } from "@/components/theme-switch";
 import EarTrainingPanel, { EarTrainingRef } from "../components/earTeanningPanel";
 import Joyride, { ACTIONS, CallBackProps, Events, EVENTS, STATUS, Step } from "react-joyride-react-19";
 import { Chip } from "@heroui/chip";
+import { UnitMeta } from '..';
+
+
+export const meta: UnitMeta = {
+    title: 'Unit 2: C D E',
+    desc: '重复 2 拍 旋律',
+    // 可以添加更多字段，如 order: 1 用于排序
+};
 
 
 interface DailyTrial {
@@ -84,7 +92,7 @@ const Page = () => {
             disableBeacon: true,
             spotlightClicks: true,
             hideFooter: true,
-            data: "a"
+            data: "key1"
         },
         // {
         //     title: '第2个音',
@@ -130,12 +138,11 @@ const Page = () => {
             placement: 'top',
             hideBackButton: true,
             disableBeacon: true,
-            data: "a"
         },
 
         {
             title: '🎉太棒了！你全都学会了🎉',
-            content: "继续看看其他功能吧",
+            content: "跟随小红点看看其他功能的介绍吧",
             placement: 'center',
             target: 'body',
         },
@@ -176,7 +183,7 @@ const Page = () => {
     ];
 
     const [state, setState] = useState({
-        run: true,
+        run: false,
         stepIndex: 0,
         steps: initialSteps,
     });
@@ -233,7 +240,7 @@ const Page = () => {
     }
 
     const onNewQuestion = (question: string[]) => {
-        let starIndex = state.steps.findIndex(item => item.data == 'a');
+        let starIndex = state.steps.findIndex(item => item.data == "key1");
 
 
         console.debug("onNewQuestion", starIndex)
@@ -252,33 +259,17 @@ const Page = () => {
         fetch("/done", { method: "POST" })
     }
 
-    const onPressKeyNote = (note: string) => {
+    const onPressKeyNote = (_note: string) => {
         let starIndex = state.steps.findIndex(item => item.target == '#btn_key_0');
 
-        if (state.stepIndex >= starIndex
-            && state.stepIndex <= starIndex + 4
+        let endIndex = state.steps.findIndex(item => item.target == '#btn_sureAnswer');
+
+        if (starIndex <= state.stepIndex
+            && state.stepIndex < endIndex
             && state.run
         ) {
-            let nextStep = starIndex + 1;
-            switch (note) {
-                case "C4":
-                    nextStep += 0;
-                    break
-                case "E4":
-                    nextStep += 1;
-                    break
-                case "G4":
-                    nextStep += 2;
-                    break
-                case "B4":
-                    nextStep += 3;
-                    break
-            }
-
-            console.debug("onPressKeyNote", note, nextStep, state.steps[nextStep])
-
             requestAnimationFrame(() => {
-                setState({ ...state, run: true, stepIndex: nextStep, });
+                setState({ ...state, run: true, stepIndex: starIndex + 1, });
             });
         }
     }
@@ -374,22 +365,18 @@ const Page = () => {
                 </Navbar>
                 <div className="flex flex-col  w-full  px-4 pt-2 gap-y-6">
 
-                    <Alert title={`剩余次数：${dailyLimit - record.used}`} color="default" variant="flat" />
-
                     <EarTrainingPanel
                         ref={earRef}
                         refrenceNote={melodyLibrary[0] ?? "C4"}
                         noteRange={melodyLibrary ?? []}
-                        melodyLength={1}
+                        melodyLength={2}
                         bpm={60}
                         customKeyNames={keyLibrary}
                         onAnswer={onAnswer}
                         onNewQuestion={onNewQuestion}
                         onPressKeyNote={onPressKeyNote}
+                        questionList={Array.from({ length: 20 })}
                     ></EarTrainingPanel>
-
-
-                    <Alert title="体验" description="体验阶段限制说明" color="warning" variant="flat" />
 
                 </div >
 
