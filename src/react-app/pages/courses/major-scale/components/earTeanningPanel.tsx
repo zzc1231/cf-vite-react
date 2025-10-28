@@ -37,7 +37,7 @@ export interface EarTrainingProps {
         answer: string[];
     }) => void;
 
-    onNewQuestion?: (question: string[]) => void
+    onNewQuestion?: (index: number, question: string[]) => void
 
     onPressKeyNote?: (note: string) => void
 }
@@ -107,7 +107,7 @@ const Page = forwardRef<EarTrainingRef, EarTrainingProps>((props: EarTrainingPro
 
     const startExercise = () => {
         let index = questionIndex;
-        if (!index) {
+        if (index == undefined) {
             index = 0
         } else {
             index++;
@@ -135,13 +135,12 @@ const Page = forwardRef<EarTrainingRef, EarTrainingProps>((props: EarTrainingPro
             question = randomMelody;
         }
 
-        setQuestionIndex(index);
         setMelody(question);
         setUserClicks([]);
         setIsAnswerCorrect(null)
         playMelody(question);
 
-        props.onNewQuestion && props.onNewQuestion(question);
+        props.onNewQuestion && props.onNewQuestion(index, question);
     };
 
 

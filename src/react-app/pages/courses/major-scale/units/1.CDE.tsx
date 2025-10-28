@@ -15,6 +15,7 @@ import { UnitMeta } from '..';
 import { Progress } from "@heroui/progress";
 import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from '@heroui/modal';
 import { Icon } from '@iconify/react';
+import { addToast } from '@heroui/toast';
 
 
 export const meta: UnitMeta = {
@@ -40,6 +41,7 @@ const Page = () => {
 
     const [record, setRecord] = useLocalStorage<DailyTrial>(`tone.todayTrail_${new Date().getMonth()}_${new Date().getDate()}`, { used: dailyLimit - 1, succ: 0 })
     const [successRate, setSuccessRate] = useState<number>(0);
+    const [questIndex, setQuestionIndex] = useState<number>(0);
 
     const earRef = useRef<EarTrainingRef>(null);
 
@@ -217,7 +219,15 @@ const Page = () => {
         }
     }
 
-    const onNewQuestion = (question: string[]) => {
+    const onNewQuestion = (index: number, question: string[]) => {
+        setQuestionIndex(index);
+
+        if (index >= questionList.length - 1) {
+            addToast({ title: "答题完成", color: "success", })
+            return;
+        }
+
+
         let starIndex = state.steps.findIndex(item => item.data == "key1");
 
 
@@ -261,9 +271,11 @@ const Page = () => {
 
                 docModal.onClose()
 
-                requestAnimationFrame(() => {
-                    setState({ ...state, run: true, stepIndex: 1 })
-                })
+                setTimeout(() => {
+                    requestAnimationFrame(() => {
+                        setState({ ...state, run: true, stepIndex: 1 })
+                    })
+                }, 400)
             })
     }
 
@@ -321,14 +333,7 @@ const Page = () => {
                             </div>
                         </NavbarItem>
                     </NavbarContent>
-                    <NavbarContent justify="center">
-                        <NavbarItem >
-                            <div className="font-bold text-default-400 flex space-x-6 justify-center">
-                                <p>{record.succ} / {record.used}</p>
-                                <p>{successRate.toFixed(2)}%</p>
-                            </div>
-                        </NavbarItem>
-                    </NavbarContent>
+
                     <NavbarContent justify="end">
                         <NavbarItem>
                             <Button isIconOnly onPressUp={settingModal.onOpen} variant="light">
@@ -340,9 +345,17 @@ const Page = () => {
                     </NavbarContent>
                 </Navbar>
 
-                <Progress className='absolute top-0 w-full' aria-label='pp' size="sm" value={50}></Progress>
+
 
                 <div className="flex flex-col  w-full  px-4 pt-2 gap-y-6">
+                    <Progress className='w-full py-0 col-span-full' aria-label='pp' size="md" value={questIndex * 100.0 / questionList.length}></Progress>
+
+                    <div className="font-bold text-sm text-default-400 flex space-x-1 justify-center">
+                        <p>进度: {questIndex} / {questionList.length}</p>
+                        <p>正确总数：{record.succ}</p>
+                        <p>正确率：{successRate.toFixed(2)}%</p>
+                    </div>
+
                     {!docModal.isOpen &&
                         <EarTrainingPanel
                             ref={earRef}

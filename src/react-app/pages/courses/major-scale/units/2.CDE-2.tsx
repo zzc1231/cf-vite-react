@@ -239,7 +239,7 @@ const Page = () => {
         }
     }
 
-    const onNewQuestion = (question: string[]) => {
+    const onNewQuestion = (_index: number, question: string[]) => {
         let starIndex = state.steps.findIndex(item => item.data == "key1");
 
 

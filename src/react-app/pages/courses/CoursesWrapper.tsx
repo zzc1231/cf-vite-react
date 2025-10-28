@@ -3,8 +3,8 @@ import { Route, Routes } from "react-router-dom";
 
 
 // === 动态导入所有课程模块 ===
-const courseModules = import.meta.glob("@/pages/courses/*/index.tsx");
-const unitModules = import.meta.glob("@/pages/courses/*/units/*.tsx");
+export const courseModules = import.meta.glob("@/pages/courses/*/index.tsx");
+export const unitModules = import.meta.glob("@/pages/courses/*/units/*.tsx");
 
 // 构建课程路由
 const courseRoutes: JSX.Element[] = [];
@@ -12,10 +12,23 @@ for (const path in courseModules) {
     const match = path.match(/courses\/([^/]+)\/index\.tsx$/);
     if (match) {
         const courseId = match[1];
-        const Component = lazy(courseModules[path] as any);
+        const loader = courseModules[path] as () => Promise<any>;
+
+        // React.lazy 包装
+        const Component = lazy(() =>
+            loader().then(mod => {
+                // 首次加载模块后赋值 meta
+                if (mod.meta) {
+                    mod.meta.courseId = courseId;
+                }
+                return mod;
+            })
+        );
         courseRoutes.push(
             <Route key={courseId} path={`${courseId}`} element={<Component />} />
         );
+
+
     }
 }
 for (const path in unitModules) {

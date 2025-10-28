@@ -71,7 +71,7 @@ export const ThemeSwitch: FC<ThemeSwitchProps> = ({
                 })}
             >
                 {isSelected ? (
-                    <Icon icon="solar:moon-outline" ></Icon>
+                    <Icon icon="solar:moon-bold" className="text-default-500"></Icon>
                 ) : (
                     <Icon icon="solar:sun-bold" ></Icon>
 
