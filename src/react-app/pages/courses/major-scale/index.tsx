@@ -11,23 +11,18 @@ export interface UnitMeta {
     fileName?: string,
     title: string,
     desc: string,
+
     tags?: string[]
 }
 
 export interface CourseMeta {
+    courseId: string,
+    unitList: UnitMeta[],
     title: string,
     desc: string,
     tags?: React.ReactNode[]
 }
 
-
-
-
-export const meta: CourseMeta = {
-    title: 'C 大调音阶',
-    desc: 'C 大调音阶听辨',
-    // 可以添加更多字段，如 order: 1 用于排序
-};
 
 const getCourseId = () => {
     // 获取当前模块的 URL
@@ -44,8 +39,9 @@ const getCourseId = () => {
 }
 
 
+
 // 新增/更新：导出 unit 列表，提取 meta 数据
-const getUnitList = () => {
+const getUnitList = (): UnitMeta[] => {
     const unitModulesEager = import.meta.glob('./units/*.tsx', { eager: true });
     return Object.entries(unitModulesEager).map(([path, module]) => {
         const fileName = path.split('/').pop()?.replace('.tsx', '') || '';
@@ -57,12 +53,18 @@ const getUnitList = () => {
     }).sort((a, b) => (a.fileName || '').localeCompare(b.fileName || ''));  // 可选：按标题排序
 };
 
+export const meta: CourseMeta = {
+    courseId: getCourseId(),
+    unitList: getUnitList(),
+    title: 'C 大调音阶',
+    desc: 'C 大调音阶听辨',
+    // 可以添加更多字段，如 order: 1 用于排序
+};
+
+
 
 const CourseItem = forwardRef<HTMLDivElement, {}>(
     (_props, ref) => {
-
-        const [courseId] = useState<string>(getCourseId())
-        const [unitList] = useState<UnitMeta[]>(getUnitList())
 
 
         const score = [90, 20, 50, 60, 70]
@@ -82,7 +84,7 @@ const CourseItem = forwardRef<HTMLDivElement, {}>(
                 </Navbar>
 
                 <div className="flex flex-col gap-2 px-4 pt-6">
-                    {unitList.map((item, index) => (
+                    {meta.unitList.map((item, index) => (
                         <Card key={index} isFooterBlurred className="w-full h-[150px] col-span-12 sm:col-span-5 bg-linear-to  bg-linear-to-br from-emerald-400/90 to-sky-400/90" >
                             <CardHeader className="absolute z-10 top-1 flex-col items-start">
                                 <h1 className="text-large font-medium mt-2">{item.title}</h1>
@@ -125,7 +127,7 @@ const CourseItem = forwardRef<HTMLDivElement, {}>(
                                     // showAnchorIcon
                                     as={Link}
                                     color="primary"
-                                    href={`courses/${courseId}/${item.fileName}`}
+                                    href={`courses/${meta.courseId}/${item.fileName}`}
                                     variant="solid"
                                 >
                                     开始练习
