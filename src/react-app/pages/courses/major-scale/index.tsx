@@ -5,7 +5,7 @@ import { Link } from "@heroui/link";
 import { Navbar, NavbarContent, NavbarItem } from "@heroui/navbar";
 import { cn } from "@heroui/theme";
 import { Icon } from "@iconify/react";
-import { forwardRef, useState } from "react";
+import { forwardRef } from "react";
 
 export interface UnitMeta {
     fileName?: string,
