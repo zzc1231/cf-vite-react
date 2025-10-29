@@ -3,7 +3,6 @@
 import { Button } from '@heroui/button';
 
 import { useEffect, useRef, useState } from "react";
-import { useLocalStorage } from "@/utils/localStorage";
 import { useDisclosure } from "@heroui/use-disclosure";
 import { Navbar, NavbarContent, NavbarItem } from "@heroui/navbar";
 
@@ -15,19 +14,26 @@ import { UnitMeta } from '..';
 import { Progress } from "@heroui/progress";
 import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from '@heroui/modal';
 import { Icon } from '@iconify/react';
-import { addToast } from '@heroui/toast';
+import { addToast, closeToast } from '@heroui/toast';
 
 
 export const meta: UnitMeta = {
+    unitId: 1,
     title: 'Unit 1: 认识 C D E',
     desc: '认识 Do Re Mi',
     // 可以添加更多字段，如 order: 1 用于排序
 };
 
 
+const keyLibrary = ['C', '', 'D', '', 'E', '', '', '', '', '', '', ''];
+const melodyLibrary = ['C4', 'D4', 'E4'];
+const questionList: Array<string[]> = [["C4"], ["D4"], ["E4"], ["D4"], ["C4"], ["D4"], ["E4"], ...Array.from({ length: 1 }, () => []),]
+
+
 interface DailyTrial {
-    used: number;
-    succ: number;
+    question: number;
+    answer: number;
+    success: number;
 }
 
 
@@ -35,17 +41,10 @@ const Page = () => {
     const settingModal = useDisclosure();
     const docModal = useDisclosure({ defaultOpen: true });
 
-    const dailyLimit = 30;
-    const keyLibrary = ['C', '', 'D', '', 'E', '', '', '', '', '', '', ''];
-    const melodyLibrary = ['C4', 'D4', 'E4'];
-
-    const [record, setRecord] = useLocalStorage<DailyTrial>(`tone.todayTrail_${new Date().getMonth()}_${new Date().getDate()}`, { used: dailyLimit - 1, succ: 0 })
+    const [record, setRecord] = useState<DailyTrial>({ question: 0, answer: 0, success: 0 })
     const [successRate, setSuccessRate] = useState<number>(0);
-    const [questIndex, setQuestionIndex] = useState<number>(0);
 
     const earRef = useRef<EarTrainingRef>(null);
-
-    const questionList: Array<string[]> = [["C4"], ["D4"], ["E4"], ["D4"], ["C4"], ["D4"], ["E4"], ...Array.from({ length: 13 }, () => []),]
 
     const initialSteps: Step[] = [
         {
@@ -177,31 +176,28 @@ const Page = () => {
         //同步存储
         setRecord({ ...record, })
 
-        // if (record.used >= dailyLimit) {
-        //     settingModal.onClose()
-        //     docModal.onClose()
-        // }
-
         let rate = 0;
-        if (record.used > 0) {
-            rate = (record.succ / record.used) * 100;
+        if (record.question > 0) {
+            rate = (record.success / record.question) * 100;
         }
 
         setSuccessRate(rate);
-    }, [record.used, record.succ]);
+    }, [record.success, record.question]);
 
     useEffect(() => {
-
         earRef.current?.reset()
-
     }, []);
 
 
     const onAnswer = ({ correct, question, answer }: { correct: boolean; question: string[]; answer: string[] }) => {
         console.debug("onAnswer", correct, question, answer)
 
+        record.answer++;
+        setRecord({ ...record })
+
         if (correct) {
-            record.succ++
+            record.success++
+            setRecord({ ...record })
             earRef.current?.newQuestion();
         }
 
@@ -217,13 +213,46 @@ const Page = () => {
                 });
             }
         }
+
+        if (record.answer >= questionList.length) {
+            let key = addToast({
+                title: "答题完成,正在同步得分",
+                color: "default",
+                promise: new Promise(resolve => setTimeout(() => resolve(false), 3000))
+            })
+
+            const json = {
+                courseId: "1",
+                unitId: String(meta.unitId),
+                score: String(record.success * 100 / questionList.length),
+            };
+
+            console.debug("答题完成", json)
+
+            fetch(`/x/Music/UnitScore/New`, {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(json),
+            })
+                .then(resp => resp.json())
+                .then(() => {
+                    closeToast(key ?? "");
+                    addToast({
+                        title: "得分同步完成",
+                        color: "success"
+                    })
+                })
+        }
     }
 
     const onNewQuestion = (index: number, question: string[]) => {
-        setQuestionIndex(index);
 
-        if (index >= questionList.length - 1) {
-            addToast({ title: "答题完成", color: "success", })
+        console.debug("onNewQuestion", question)
+
+        record.question++
+        setRecord({ ...record })
+
+        if (index >= questionList.length) {
             return;
         }
 
@@ -231,7 +260,7 @@ const Page = () => {
         let starIndex = state.steps.findIndex(item => item.data == "key1");
 
 
-        console.debug("onNewQuestion", starIndex)
+
 
         if (state.stepIndex <= starIndex) {
             let step = state.steps[starIndex];
@@ -242,7 +271,7 @@ const Page = () => {
                 setState({ ...state, stepIndex: state.stepIndex + 1, });
             });
         }
-        record.used++
+
 
         fetch("/done", { method: "POST" })
     }
@@ -266,8 +295,8 @@ const Page = () => {
     const startTrial = (_tutorial: boolean = false) => {
         fetch("/todayFirst")
             .then(res => res.json() as Promise<{ count: number }>)
-            .then((data) => {
-                record.used = data.count;
+            .then((_data) => {
+                // record.used = data.count;
 
                 docModal.onClose()
 
@@ -282,7 +311,7 @@ const Page = () => {
 
     const handleJoyrideCallback = (data: CallBackProps) => {
         const { action, index, status, type } = data;
-        console.debug(data)
+        // console.debug(data)
 
         if (([STATUS.FINISHED, STATUS.SKIPPED] as string[]).includes(status)) {
             // Need to set our running state to false, so we can restart if we click start again.
@@ -298,7 +327,7 @@ const Page = () => {
 
         }
 
-        console.debug(type === EVENTS.TOUR_STATUS ? `${type}:${status}` : type, data);
+        // console.debug(type === EVENTS.TOUR_STATUS ? `${type}:${status}` : type, data);
     }
 
     return (
@@ -345,14 +374,12 @@ const Page = () => {
                     </NavbarContent>
                 </Navbar>
 
-
-
                 <div className="flex flex-col  w-full  px-4 pt-2 gap-y-6">
-                    <Progress className='w-full py-0 col-span-full' aria-label='pp' size="md" value={questIndex * 100.0 / questionList.length}></Progress>
+                    <Progress className='w-full py-0 col-span-full' aria-label='pp' size="md" value={record.question * 100.0 / questionList.length}></Progress>
 
                     <div className="font-bold text-sm text-default-400 flex space-x-1 justify-center">
-                        <p>进度: {questIndex} / {questionList.length}</p>
-                        <p>正确总数：{record.succ}</p>
+                        <p>进度: {record.question} / {questionList.length}</p>
+                        <p>正确总数：{record.success}</p>
                         <p>正确率：{successRate.toFixed(2)}%</p>
                     </div>
 
@@ -372,9 +399,6 @@ const Page = () => {
                     }
 
                 </div >
-
-
-
 
 
                 <Modal

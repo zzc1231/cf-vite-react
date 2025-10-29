@@ -9,15 +9,17 @@ import { cn } from "@heroui/theme";
 import { Icon } from "@iconify/react";
 import { motion, useAnimation } from "framer-motion";
 import { useInView } from "react-intersection-observer";
-import { forwardRef, useEffect } from "react";
+import { forwardRef, useEffect, useState } from "react";
 
 
 export interface UnitMeta {
+    unitId: number,
     fileName?: string,
     title: string,
     desc: string,
 
-    tags?: string[]
+    tags?: string[],
+    score?: number,
 }
 
 export interface CourseMeta {
@@ -35,7 +37,7 @@ const getUnitList = (): UnitMeta[] => {
     const unitModulesEager = import.meta.glob('./units/*.tsx', { eager: true });
     return Object.entries(unitModulesEager).map(([path, module]) => {
         const fileName = path.split('/').pop()?.replace('.tsx', '') || '';
-        console.debug(path)
+
         const metaData = {
             ...((module as any).meta ?? { title: fileName, description: 'No description available.' }),
             fileName
@@ -84,7 +86,7 @@ const itemVariants = {
 
 const CourseItem = forwardRef<HTMLDivElement, {}>(
     (_props, ref) => {
-        const score = [90, 20, 50, 60, 70]
+        const [score, setScore] = useState<number[]>([])
         const controls = useAnimation();
         const [ref1, inView] = useInView({ triggerOnce: true, threshold: 0.2 }); // 仅触发一次
 
@@ -93,6 +95,34 @@ const CourseItem = forwardRef<HTMLDivElement, {}>(
                 controls.start("visible");
             }
         }, [controls, inView]);
+
+
+        useEffect(() => {
+
+            const params = new URLSearchParams({ courseId: String(1), });
+
+            setScore(Array.from<number>({ length: meta.unitList.length }).fill(0));
+
+            fetch(`/x/Music/UnitScore/CourseScoreList?${params}`, {
+                method: "GET",
+                headers: { 'Content-Type': 'application/json' },
+            })
+                .then(resp => resp.json())
+                .then((data) => {
+                    for (const unit of data.data) {
+                        const index = meta.unitList.findIndex(item => item.unitId == unit.unitId);
+                        if (index !== -1) {
+                            meta.unitList[index].score = unit.score;
+                            score[index] = unit.score;
+                            setScore([...score])
+                            console.debug("score", index, unit.score)
+                        }
+                    }
+                })
+                .catch((e) => {
+                    console.error(e);
+                });
+        }, [])
 
         return (
             <div ref={ref} className="course-item">
@@ -131,7 +161,6 @@ const CourseItem = forwardRef<HTMLDivElement, {}>(
                                     <CardFooter className="justify-between before:bg-white/10 border-white/20 border-1 overflow-hidden py-1 absolute  rounded-xl bottom-1 w-[calc(100%-8px)] shadow-small ml-1 z-10">
                                         <div className="flex items-center gap-1">
                                             {Array.from({ length: 5 }, (_, i) => {
-
 
                                                 const isSelected = i + 1 <= (score[index] / 18);
 
