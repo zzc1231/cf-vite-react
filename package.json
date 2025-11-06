@@ -52,6 +52,7 @@
         "framer-motion": "11.18.2",
         "hono": "4.8.2",
         "react": "19.0.0",
+        "react-canvas-confetti": "^2.0.7",
         "react-dom": "19.0.0",
         "react-intersection-observer": "^9.16.0",
         "react-joyride-react-19": "^2.9.2",

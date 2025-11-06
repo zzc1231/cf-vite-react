@@ -5,6 +5,7 @@ import { Button } from '@heroui/button';
 import { useEffect, useRef, useState } from "react";
 import { useDisclosure } from "@heroui/use-disclosure";
 import { Navbar, NavbarContent, NavbarItem } from "@heroui/navbar";
+import { useLocation, useNavigate } from 'react-router-dom'
 
 import { ThemeSwitch } from "@/components/theme-switch";
 import EarTrainingPanel, { EarTrainingRef } from "../components/earTeanningPanel";
@@ -15,12 +16,13 @@ import { Progress } from "@heroui/progress";
 import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from '@heroui/modal';
 import { Icon } from '@iconify/react';
 import { addToast, closeToast } from '@heroui/toast';
+import { addRealistic } from '@/confetti-provider';
 
 import * as Tone from 'tone';
 
 
 export const meta: UnitMeta = {
-    title: 'Unit 1: 认识 C D E',
+    title: 'Unit 1: 认识 C',
     desc: '认识 Do Re Mi',
 
     bpm: 100,
@@ -28,9 +30,9 @@ export const meta: UnitMeta = {
 };
 
 
-const keyLibrary = ['C', '', 'D', '', 'E', '', '', '', '', '', '', ''];
-const melodyLibrary = ['C4', 'D4', 'E4'];
-const questionList: Array<string[]> = [["C4"], ["D4"], ["E4"], ["D4"], ["C4"], ["D4"], ["E4"], ...Array.from({ length: 1 }, () => []),]
+const keyLibrary = ['C', '', '', '', '', '', '', '', '', '', '', ''];
+const melodyLibrary = ['C4'];
+const questionList: Array<string[]> = [...Array.from({ length: 5 }, () => []),]
 
 
 interface DailyTrial {
@@ -41,8 +43,12 @@ interface DailyTrial {
 
 
 const Page = () => {
+
+    const navigate = useNavigate();
+
     const settingModal = useDisclosure();
     const docModal = useDisclosure({ defaultOpen: true });
+
 
     const [record, setRecord] = useState<DailyTrial>({ question: 0, answer: 0, success: 0 })
     const [successRate, setSuccessRate] = useState<number>(0);
@@ -50,24 +56,6 @@ const Page = () => {
     const earRef = useRef<EarTrainingRef>(null);
 
     const initialSteps: Step[] = [
-        {
-            content: (<div className="text-left text-default-400 tracking-wide">
-                <p className="">我们聚焦于练习，这里不赘述过多乐理</p>
-                <p>C大调音阶的前三个音是： </p>
-                <div className="pl-8">
-                    <div className="flex "> <span className="w-26" >音名：</span>  <Chip size="sm" className="bg-green-500/75"> C  D  E </Chip></div>
-                    <div className="flex "> <span className="w-26">简谱：</span> <Chip size="sm" className="bg-green-500/75"> 1  3  5 </Chip> </div>
-                    <div className="flex "> <span className="w-26">首调唱名：</span> <Chip size="sm" className="bg-green-500/75"> Do Mi So </Chip> </div>
-                </div>
-                <p>练习提示：</p>
-                <p>用你习惯的方式唱出来！唱“C D E”、 “Do Re Mi” 或 “1 2 3”都可以，关键是<span className="font-bold"> 把音唱准，不用纠结首调或固定调</span>。</p>
-                <p>你肯定会有疑惑！多练习几次，当你能听出任意旋律的音高时，一切就会豁然开朗！</p>
-            </div>
-            ),
-            placement: 'center',
-            target: 'body',
-            title: (<p>认识 Do Re Mi</p>)
-        },
         {
             target: '#modal_ready',
             content: '先调好音量，保证能够听到声音哦~',
@@ -94,8 +82,11 @@ const Page = () => {
         },
 
         {
-            title: '第1个音',
-            content: "点击刚才播放的那个音：C",
+            title: '跟唱：Do',
+            content: (<>
+                <p>这次我们用唱名法</p>
+                <p>唱：Do，然后点击作答</p>
+            </>),
             target: '#btn_key_0',
             hideBackButton: true,
             disableBeacon: true,
@@ -114,12 +105,53 @@ const Page = () => {
             hideFooter: true,
         },
         {
-            title: '答案区',
-            content: "在这里对比答案,可以点击答题按键比对答错的音",
-            target: '#div_anwserPanel',
-            placement: 'top',
+            title: '跟唱：C',
+            content: (<>
+                <p>这次我们唱音名</p>
+                <p>唱：C，然后点击作答</p>
+            </>),
+            target: '#btn_key_0',
             hideBackButton: true,
             disableBeacon: true,
+            spotlightClicks: true,
+            hideFooter: true,
+            data: "key1"
+        },
+
+        {
+            title: '提交答案',
+            content: "提交看看结果",
+            target: '#btn_sureAnswer',
+            placement: 'bottom',
+            hideBackButton: true,
+            disableBeacon: true,
+            spotlightClicks: true,
+            hideFooter: true,
+        },
+        {
+            title: '跟唱：1',
+            content: (<>
+                <p>这次我们直接唱数字</p>
+                <p>唱：1，然后点击作答</p>
+            </>),
+            target: '#btn_key_0',
+            hideBackButton: true,
+            disableBeacon: true,
+            spotlightClicks: true,
+            hideFooter: true,
+            data: "key1"
+        },
+
+
+        {
+            title: '提交答案',
+            content: "提交看看结果",
+            target: '#btn_sureAnswer',
+            placement: 'bottom',
+            hideBackButton: true,
+            disableBeacon: true,
+            spotlightClicks: true,
+            hideFooter: true,
         },
 
         {
@@ -128,52 +160,15 @@ const Page = () => {
             placement: 'center',
             target: 'body',
         },
-
-        {
-            title: '播放参考音',
-            content: "忘了音高？点这里",
-            placement: 'top',
-            target: '#btn_playRefrence',
-            hideBackButton: true,
-        },
-        {
-            title: '重放题目',
-            content: "没听清就再放一次",
-            placement: 'top',
-            target: '#btn_replay',
-        },
-        {
-            title: '清除答案',
-            content: "不小心按错也可以重来",
-            placement: 'top',
-            target: '#btn_clearAnswer',
-        },
-        {
-            title: '下一题',
-            content: "这题答错不要紧，重要的是下一题！",
-            placement: 'top',
-            target: '#btn_nextTrain',
-        },
-
-        {
-            title: '🎉🎉🎉',
-            content: "都学会啦！练耳大师 继续加油哦～",
-            placement: 'center',
-            target: 'body',
-        },
-
     ];
 
     const [state, setState] = useState({
-        run: false,
+        run: true,
         stepIndex: 0,
         steps: initialSteps,
     });
 
 
-    useEffect(() => {
-
-    }, [])
 
     useEffect(() => {
         //同步存储
@@ -243,6 +238,29 @@ const Page = () => {
                         title: "得分同步完成",
                         color: "success",
                     })
+
+
+
+                    // 在需要触发撒花的地方调用
+                    addRealistic(); // 使用默认配置
+                    // // 或者自定义配置
+                    // addRealistic({
+                    //     spread: 180,
+                    //     startVelocity: 55,
+                    //     elementCount: 100,
+                    //     colors: ['#FFD700', '#FFA500', '#FF6347']
+                    // });
+
+
+                    let location = useLocation()
+                    console.log(location)
+
+                    const segments = location.pathname.split('/').filter(Boolean); // ["aaa", "1"]
+
+                    // 去掉最后一层
+                    const parentPath = '/' + segments.slice(0, -1).join('/');
+                    navigate(parentPath, { replace: true });
+
                 })
         }
     }
@@ -304,7 +322,7 @@ const Page = () => {
 
                 setTimeout(() => {
                     requestAnimationFrame(() => {
-                        setState({ ...state, run: true, stepIndex: 1 })
+                        setState({ ...state, run: true, stepIndex: 0 })
                     })
                 }, 400)
             })
@@ -324,7 +342,6 @@ const Page = () => {
         }, melody.map((note, index) => [`0:${index}`, note]));
 
         part.start();
-        // part.stop(`+${melody.length}m`);  // 确保 Part 在播放完成后停止
 
         //拍数
         Tone.getTransport().timeSignature = [melody.length, 4];
@@ -332,10 +349,7 @@ const Page = () => {
         Tone.getTransport().bpm.value = meta.bpm;
         Tone.getTransport().start();
 
-        // //回调
-        // Tone.getTransport().scheduleOnce(() => {
-        //     part.dispose();  // 清理 Part 实例
-        // }, `+${(melody.length) * Tone.Time("4n").toSeconds()}`);
+
     };
 
 

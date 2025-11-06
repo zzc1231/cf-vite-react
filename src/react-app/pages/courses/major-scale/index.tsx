@@ -13,17 +13,23 @@ import { forwardRef, useEffect, useState } from "react";
 
 
 export interface UnitMeta {
-    unitId: number,
-    fileName?: string,
+    /**
+     * 自动填充
+     */
+    unitName?: string,
     title: string,
     desc: string,
 
     tags?: string[],
     score?: number,
+    bpm: number,
 }
 
 export interface CourseMeta {
-    courseId: string,
+    /**
+   * 自动填充
+   */
+    courseName?: string,
     unitList: UnitMeta[],
     title: string,
     desc: string,
@@ -35,20 +41,23 @@ export interface CourseMeta {
 // 新增/更新：导出 unit 列表，提取 meta 数据
 const getUnitList = (): UnitMeta[] => {
     const unitModulesEager = import.meta.glob('./units/*.tsx', { eager: true });
+
     return Object.entries(unitModulesEager).map(([path, module]) => {
         const fileName = path.split('/').pop()?.replace('.tsx', '') || '';
-
-        const metaData = {
-            ...((module as any).meta ?? { title: fileName, description: 'No description available.' }),
-            fileName
-        };
-        return metaData;
-
-    }).sort((a, b) => (a.fileName || '').localeCompare(b.fileName || ''));  // 可选：按标题排序
+        return { fileName, meta: (module as any).meta }
+    })
+        .sort((a, b) => a.fileName.localeCompare(b.fileName)) // 关键：排序
+        .map(({ meta, fileName }, index) => {
+            // 正确：item 是 { fileName, meta }，index 是排序后的顺序
+            meta.unitId = index + 1;
+            return {
+                ...meta,
+                unitName: fileName
+            }
+        });
 };
 
 export const meta: CourseMeta = {
-    courseId: "",
     unitList: getUnitList(),
     // title: 'C 大调音阶',
     // desc: 'C 大调音阶听辨',
@@ -98,8 +107,8 @@ const CourseItem = forwardRef<HTMLDivElement, {}>(
 
 
         useEffect(() => {
-
-            const params = new URLSearchParams({ courseId: String(1), });
+            //Todo
+            const params = new URLSearchParams({ courseName: meta.courseName ?? "", });
 
             setScore(Array.from<number>({ length: meta.unitList.length }).fill(0));
 
@@ -110,7 +119,7 @@ const CourseItem = forwardRef<HTMLDivElement, {}>(
                 .then(resp => resp.json())
                 .then((data) => {
                     for (const unit of data.data) {
-                        const index = meta.unitList.findIndex(item => item.unitId == unit.unitId);
+                        const index = meta.unitList.findIndex(item => item.unitName == unit.unitName);
                         if (index !== -1) {
                             meta.unitList[index].score = unit.score;
                             score[index] = unit.score;
@@ -187,7 +196,7 @@ const CourseItem = forwardRef<HTMLDivElement, {}>(
                                             // showAnchorIcon
                                             as={Link}
                                             color="primary"
-                                            href={`courses/${meta.courseId}/${item.fileName}`}
+                                            href={`courses/${meta.courseName}/${item.unitName}`}
                                             variant="solid"
                                         >
                                             开始练习

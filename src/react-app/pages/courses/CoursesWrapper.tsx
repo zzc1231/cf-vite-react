@@ -11,21 +11,22 @@ const courseRoutes: JSX.Element[] = [];
 for (const path in courseModules) {
     const match = path.match(/courses\/([^/]+)\/index\.tsx$/);
     if (match) {
-        const courseId = match[1];
+        const courseName = match[1];
         const loader = courseModules[path] as () => Promise<any>;
 
         // React.lazy 包装
         const Component = lazy(() =>
             loader().then(mod => {
+                console.debug("lazy course:", courseName, mod)
                 // 首次加载模块后赋值 meta
                 if (mod.meta) {
-                    mod.meta.courseId = courseId;
+                    mod.meta.courseName = courseName;
                 }
                 return mod;
             })
         );
         courseRoutes.push(
-            <Route key={courseId} path={`${courseId}`} element={<Component />} />
+            <Route key={courseName} path={`${courseName}`} element={<Component />} />
         );
 
 
@@ -34,11 +35,24 @@ for (const path in courseModules) {
 for (const path in unitModules) {
     const match = path.match(/courses\/([^/]+)\/units\/([^/]+)\.tsx$/);
     if (match) {
-        const [_, courseId, unitId] = match;
-        console.debug("unit:", courseId, unitId)
-        const Component = lazy(unitModules[path] as any);
+        const [_, courseName, unitName] = match;
+        console.debug("unit:", courseName, unitName)
+
+        const Component = lazy(() =>
+            unitModules[path]().then(mod => {
+
+                console.debug("lazy unit:", courseName, unitName, mod)
+                const typedMod = mod as any;
+                if (typedMod.meta) {
+                    typedMod.meta.courseName = courseName;
+                    typedMod.meta.unitName = unitName;
+                }
+                return typedMod;
+            }) as Promise<{ default: React.ComponentType<any> }>
+        );
+
         courseRoutes.push(
-            <Route key={`${courseId}-${unitId}`} path={`${courseId}/${unitId}`} element={<Component />} />
+            <Route key={`${courseName}-${unitName}`} path={`${courseName}/${unitName}`} element={<Component />} />
         );
     }
 }

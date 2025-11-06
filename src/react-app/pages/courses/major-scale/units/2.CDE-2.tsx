@@ -17,10 +17,10 @@ import { UnitMeta } from '..';
 
 
 export const meta: UnitMeta = {
-    unitId: 2,
     title: 'Unit 2: C D E',
     desc: '重复 2 拍 旋律',
     // 可以添加更多字段，如 order: 1 用于排序
+    bpm: 100
 };
 
 

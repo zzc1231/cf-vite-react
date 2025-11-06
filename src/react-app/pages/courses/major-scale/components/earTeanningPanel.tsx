@@ -66,12 +66,18 @@ const Page = forwardRef<EarTrainingRef, EarTrainingProps>((props: EarTrainingPro
     const noteLib = ['C4', 'C#4', 'D4', 'D#4', 'E4', 'F4', 'F#4', 'G4', 'G#4', 'A4', 'A#4', 'B4']
 
 
+    const [highlighted, setHighlighted] = useState<number>(-1);
     const synthRef = useRef<Tone.PolySynth | null>(null);
 
     useEffect(() => {
         if (typeof window !== "undefined") {
             synthRef.current = new Tone.PolySynth().toDestination();
         }
+
+        if (Tone.getContext().state === "running") {
+            readyModal.onClose()
+        }
+
     }, []);
 
 
@@ -154,13 +160,22 @@ const Page = forwardRef<EarTrainingRef, EarTrainingProps>((props: EarTrainingPro
         setIsPlaying(true);
 
         Tone.getTransport().cancel();  // 清除所有预定的事件
-
+        let index = 0
         const part = new Tone.Part((time, note) => {
             synth().triggerAttackRelease(note, '4n', time);
+
+            // 高亮当前列
+            Tone.getDraw().schedule(() => {
+                console.debug(time, note, melody.indexOf(note), highlighted)
+                setHighlighted(index++);
+            }, time);
+
         }, melody.map((note, index) => [`0:${index}`, note]));
 
         part.start();
         part.stop(`+${melody.length}m`);  // 确保 Part 在播放完成后停止
+
+
 
         //拍数
         Tone.getTransport().timeSignature = [melody.length, 4];
@@ -171,6 +186,7 @@ const Page = forwardRef<EarTrainingRef, EarTrainingProps>((props: EarTrainingPro
         //回调
         Tone.getTransport().scheduleOnce(() => {
             setIsPlaying(false);
+            setHighlighted(-1);
             part.dispose();  // 清理 Part 实例
             // Tone.getTransport().stop();
         }, `+${(melody.length) * Tone.Time("4n").toSeconds()}`);
@@ -243,7 +259,8 @@ const Page = forwardRef<EarTrainingRef, EarTrainingProps>((props: EarTrainingPro
 
                 <div className="overflow-x-auto grid grid-flow-col auto-cols-auto gap-1 items-center " id="div_anwserPanel">
                     {Array.from({ length: props.melodyLength }).map((_, index) => (
-                        <div className="flex flex-col space-y-1 min-w-10" key={index}>
+                        <div key={index}
+                            className={`flex flex-col space-y-1 min-w-10 ${index === highlighted ? "bg-orange-300/50 rounded" : ""} `} >
                             <Snippet
                                 className="text-lg font-bold justify-center "
                                 hideCopyButton
