@@ -122,6 +122,7 @@ const Page = () => {
             title: '提交答案',
             content: "提交看看结果",
             target: '#btn_sureAnswer',
+            spotlightClicks: true,
             placement: 'bottom',
             hideFooter: true,
         },
@@ -145,7 +146,17 @@ const Page = () => {
             content: "提交看看结果",
             target: '#btn_sureAnswer',
             placement: 'bottom',
+            spotlightClicks: true,
             hideFooter: true,
+        },
+
+        {
+            title: '答案区',
+            content: "在这里对比答案,可以点击答题按键比对答错的音",
+            target: '#div_anwserPanel',
+            placement: 'top',
+            hideBackButton: true,
+            disableBeacon: true,
         },
 
         {
@@ -193,12 +204,12 @@ const Page = () => {
             earRef.current?.newQuestion();
         }
 
-        if (state.run) {
-            state.stepIndex++;
-            requestAnimationFrame(() => {
-                setState({ ...state, });
-            });
-        }
+        // if (state.run) {
+        //     state.stepIndex++;
+        //     requestAnimationFrame(() => {
+        //         setState({ ...state, });
+        //     });
+        // }
 
         if (record.answer >= questionList.length) {
             let key = addToast({
@@ -253,14 +264,12 @@ const Page = () => {
             return;
         }
 
-
         if (state.run) {
             state.stepIndex++;
             requestAnimationFrame(() => {
                 setState({ ...state, });
             });
         }
-
 
         fetch("/done", { method: "POST" })
     }
