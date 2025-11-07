@@ -16,7 +16,7 @@ import { Progress } from "@heroui/progress";
 import { Modal, ModalBody, ModalContent, ModalFooter, ModalHeader } from '@heroui/modal';
 import { Icon } from '@iconify/react';
 import { addToast, closeToast } from '@heroui/toast';
-import { addRealistic } from '@/confetti-provider';
+import { useConfetti } from '@/confetti-provider';
 
 import * as Tone from 'tone';
 
@@ -43,7 +43,7 @@ interface DailyTrial {
 
 
 const Page = () => {
-
+    const fire = useConfetti();
     const navigate = useNavigate();
 
     const settingModal = useDisclosure();
@@ -123,9 +123,6 @@ const Page = () => {
             content: "提交看看结果",
             target: '#btn_sureAnswer',
             placement: 'bottom',
-            hideBackButton: true,
-            disableBeacon: true,
-            spotlightClicks: true,
             hideFooter: true,
         },
         {
@@ -148,9 +145,6 @@ const Page = () => {
             content: "提交看看结果",
             target: '#btn_sureAnswer',
             placement: 'bottom',
-            hideBackButton: true,
-            disableBeacon: true,
-            spotlightClicks: true,
             hideFooter: true,
         },
 
@@ -200,16 +194,10 @@ const Page = () => {
         }
 
         if (state.run) {
-            let starIndex = state.steps.findIndex(item => item.target == '#div_anwserPanel');
-            if (starIndex >= state.stepIndex) {
-                if (correct) {
-                    state.steps[starIndex].content = "答错正确会自动进入下一题，当答题错误时可以在这里比对"
-                }
-
-                requestAnimationFrame(() => {
-                    setState({ ...state, stepIndex: starIndex, });
-                });
-            }
+            state.stepIndex++;
+            requestAnimationFrame(() => {
+                setState({ ...state, });
+            });
         }
 
         if (record.answer >= questionList.length) {
@@ -239,18 +227,7 @@ const Page = () => {
                         color: "success",
                     })
 
-
-
-                    // 在需要触发撒花的地方调用
-                    addRealistic(); // 使用默认配置
-                    // // 或者自定义配置
-                    // addRealistic({
-                    //     spread: 180,
-                    //     startVelocity: 55,
-                    //     elementCount: 100,
-                    //     colors: ['#FFD700', '#FFA500', '#FF6347']
-                    // });
-
+                    fire(); // 使用默认配置
 
                     let location = useLocation()
                     console.log(location)
@@ -277,18 +254,10 @@ const Page = () => {
         }
 
 
-        let starIndex = state.steps.findIndex(item => item.data == "key1");
-
-
-
-
-        if (state.stepIndex <= starIndex) {
-            let step = state.steps[starIndex];
-
-            step.content = `选 ${question[0].replace(/\d+$/, '')}`
-
+        if (state.run) {
+            state.stepIndex++;
             requestAnimationFrame(() => {
-                setState({ ...state, stepIndex: state.stepIndex + 1, });
+                setState({ ...state, });
             });
         }
 
@@ -297,16 +266,11 @@ const Page = () => {
     }
 
     const onPressKeyNote = (_note: string) => {
-        let starIndex = state.steps.findIndex(item => item.target == '#btn_key_0');
 
-        let endIndex = state.steps.findIndex(item => item.target == '#btn_sureAnswer');
-
-        if (starIndex <= state.stepIndex
-            && state.stepIndex <= endIndex
-            && state.run
-        ) {
+        if (state.run) {
+            state.stepIndex++;
             requestAnimationFrame(() => {
-                setState({ ...state, run: true, stepIndex: starIndex + 1, });
+                setState({ ...state, });
             });
         }
     }

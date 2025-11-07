@@ -260,7 +260,7 @@ const Page = forwardRef<EarTrainingRef, EarTrainingProps>((props: EarTrainingPro
                 <div className="overflow-x-auto grid grid-flow-col auto-cols-auto gap-1 items-center " id="div_anwserPanel">
                     {Array.from({ length: props.melodyLength }).map((_, index) => (
                         <div key={index}
-                            className={`flex flex-col space-y-1 min-w-10 ${index === highlighted ? "bg-orange-300/50 rounded" : ""} `} >
+                            className={`flex flex-col space-y-1 min-w-10  transition-all duration-100 ${index === highlighted ? "bg-orange-300/50 rounded" : ""} `} >
                             <Snippet
                                 className="text-lg font-bold justify-center "
                                 hideCopyButton

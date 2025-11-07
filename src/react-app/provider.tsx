@@ -17,8 +17,9 @@ export function Provider({ children }: { children: React.ReactNode }) {
     return (
         <HeroUIProvider navigate={navigate} useHref={useHref}>
             <ToastProvider />
-            <ConfettiProvider />
-            {children}
+            <ConfettiProvider>
+                {children}
+            </ConfettiProvider>
         </HeroUIProvider>
     );
 }

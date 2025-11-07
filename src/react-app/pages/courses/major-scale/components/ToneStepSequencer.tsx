@@ -121,7 +121,7 @@ const ToneStepSequencer: React.FC<{
                             <button
                                 key={y}
                                 className={`
-                m-0.5 flex-1 border border-gray-300 dark:border-gray-400/50 rounded
+                m-0.5 flex-1 border border-gray-300 dark:border-gray-400/50 rounded-s-xs
                 transition-all duration-100
                 ${filled ? "bg-green-500 dark:bg-green-500/60  shadow" : "bg-gray-300 dark:bg-gray-400/50"}
                 ${x === highlighted && !filled ? "bg-orange-300" : ""}
