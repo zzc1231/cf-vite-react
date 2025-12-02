@@ -5,7 +5,7 @@ import * as Tone from "tone";
 import ChordStepSequencer from "../components/ChordStepSequencer";
 import { UnitMeta } from "..";
 import { useConfetti } from '@/confetti-provider';
-import { addToast } from "@heroui/toast";
+// import { addToast } from "@heroui/toast";
 import { Spacer } from "@heroui/spacer";
 
 export const meta: UnitMeta = {
