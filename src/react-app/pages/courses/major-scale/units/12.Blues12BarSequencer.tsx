@@ -87,7 +87,7 @@ const Blues12BarSequencer: React.FC = () => {
     const start = async () => {
         await Tone.start();
         let step = 0;
-        const loop = new Tone.Loop(time => {
+        new Tone.Loop(time => {
             const barIndex = Math.floor(step / beatsPerBar);
             const beatIndex = step % beatsPerBar;
 
@@ -110,13 +110,13 @@ const Blues12BarSequencer: React.FC = () => {
             step = (step + 1) % totalSteps;
         }, "4n").start(0);
 
-        Tone.Transport.start();
+        Tone.getTransport().start();
         setIsPlaying(true);
     };
 
     const stop = () => {
-        Tone.Transport.stop();
-        Tone.Transport.cancel();
+        Tone.getTransport().stop();
+        Tone.getTransport().cancel();
         setIsPlaying(false);
     };
 
