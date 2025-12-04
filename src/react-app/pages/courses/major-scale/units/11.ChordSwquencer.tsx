@@ -1,12 +1,14 @@
 'use client';
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import * as Tone from "tone";
 import ChordStepSequencer from "../components/ChordStepSequencer";
 import { UnitMeta } from "..";
 import { useConfetti } from '@/confetti-provider';
 // import { addToast } from "@heroui/toast";
 import { Spacer } from "@heroui/spacer";
+import { Button } from "@heroui/button";
+import { isPitchEqual } from "@/utils/pitchCompare";
 
 export const meta: UnitMeta = {
     title: 'Unit 11: 12 Bar Blues',
@@ -55,7 +57,43 @@ const matrix: Chord[] = [
 const App: React.FC = () => {
     const [highlighted, setHighlighted] = useState<number>(-1);
     const fire = useConfetti();
-    const synth = typeof window !== "undefined" ? new Tone.PolySynth().toDestination() : undefined;
+    const synth = useRef<Tone.PolySynth<Tone.Synth> | null>(null);
+
+    const chordSynthRef = useRef<Tone.PolySynth<Tone.Synth> | null>(null);
+    const hihatRef = useRef<Tone.MetalSynth | null>(null);
+
+
+    // ---------- 初始化 Tone Synth ----------
+    useEffect(() => {
+
+        if (typeof window == "undefined")
+            return;
+
+        synth.current = new Tone.PolySynth(Tone.Synth, {
+            envelope: { attack: 0.01, decay: 0.3, sustain: 0.5, release: 0.5 },
+        }).toDestination();
+
+        chordSynthRef.current = new Tone.PolySynth(Tone.Synth, {
+            oscillator: { type: "sawtooth" },
+            envelope: { attack: 0.01, decay: 0.2, sustain: 0.3, release: 0.8 },
+        }).toDestination();
+
+        hihatRef.current = new Tone.MetalSynth({
+            // frequency: 400,
+            envelope: { attack: 0.001, decay: 0.1, release: 0.1 },
+            harmonicity: 5.1,
+            modulationIndex: 32,
+            resonance: 4000,
+            octaves: 1.5,
+        }).toDestination();
+
+        Tone.getTransport().swing = 0.2;
+
+        return () => {
+            Tone.getTransport().stop();
+            Tone.getTransport().cancel();
+        };
+    }, []);
 
 
     const start = async () => {
@@ -79,7 +117,8 @@ const App: React.FC = () => {
         let note = chord.note[y][0];
         let noteName = chord.note[y][1];
 
-        if (chord.chordNote.includes(note)) {
+
+        if (chord.chordNote.findIndex(item => isPitchEqual(item, note)) >= 0) {
             return (<div className="p-4 flex items-center justify-center h-full border border-gray-400 rounded-full">{noteName}</div>)
         }
 
@@ -88,7 +127,9 @@ const App: React.FC = () => {
 
     function chordName({ x }: { x: number; }): React.ReactNode {
         let chord = matrix[x];
-        return chord.disName;
+
+        return (<div className="flex items-center justify-center bg-gray-600/50 font-bold text-xl italic ">{chord.disName}</div>)
+
     }
 
     const onTrigger = ({ time, x, y, }: { time: number; x: number; y: number; }) => {
@@ -96,7 +137,7 @@ const App: React.FC = () => {
         let chord = matrix[x];
         let note = chord.note[y][0];
 
-        synth?.triggerAttackRelease(note, "1n", time);
+        synth.current?.triggerAttackRelease(note, "1n", time);
 
         // addToast({
         //     title: `${time} ${x} -${y}`,
@@ -106,10 +147,20 @@ const App: React.FC = () => {
 
 
 
-    function onBeat({ x, }: { time: number; x: number; }): void {
+    function onBeat({ x, time }: { time: number; x: number; }): void {
+
+        //hhat
+        hihatRef.current?.triggerAttackRelease("F#3", "16n", time)
 
         let beatIndex = Math.trunc(x % 4)
         setHighlighted(beatIndex);
+
+        //chordPlay
+        if (beatIndex == 0) {
+            const barIndex = Math.floor(x / 4);
+            const chord = matrix[barIndex]
+            chordSynthRef.current?.triggerAttackRelease(chord.chordNote, "1m", time, 0.5 / chord.chordNote.length);
+        }
         // addToast({
         //     title: `beat: ${x} `,
         //     color: "success",
@@ -119,24 +170,25 @@ const App: React.FC = () => {
     return (
         <div className="p-8">
             <div className="flex gap-2 mb-4">
-                <button
-                    className="px-4 py-2 bg-red-500 text-white font-bold rounded"
-                    onClick={showConfetti}
+                <Button
+
+                    color="success"
+                    onPressStart={showConfetti}
                 >
                     Realistic
-                </button>
-                <button
-                    className="px-4 py-2 bg-green-500 text-white font-bold rounded"
-                    onClick={start}
+                </Button>
+                <Button
+                    color="success"
+                    onPressStart={start}
                 >
                     Play
-                </button>
-                <button
-                    className="px-4 py-2 bg-red-500 text-white font-bold rounded"
-                    onClick={stop}
+                </Button>
+                <Button
+                    color="danger"
+                    onPressStart={stop}
                 >
                     Stop
-                </button>
+                </Button>
             </div>
             <ChordStepSequencer xLen={matrix.length} yLen={8} subdivision="4n" beatsPerChord={4} onTrigger={onTrigger} onBeat={onBeat} cellName={cellName} chordName={chordName} />
             <Spacer y={4}></Spacer>

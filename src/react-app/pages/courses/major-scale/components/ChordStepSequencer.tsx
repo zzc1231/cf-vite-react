@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import * as Tone from "tone";
+import BackgroundAudio, { BackgroundAudioHandle } from "./BackgroundAudio";
 
 
 const ChordStepSequencer: React.FC<{
@@ -23,6 +24,8 @@ const ChordStepSequencer: React.FC<{
     cellName = ({ x, y }) => `${x}.${y}`,
     chordName = ({ x }) => `c:${x}`
 }) => {
+        const bgAudioRef = useRef<BackgroundAudioHandle>(null);
+
         // ---------- state ----------
         const [matrix, setMatrix] = useState<boolean[][]>([]);
         const [highlighted, setHighlighted] = useState<number>(-1);
@@ -86,10 +89,14 @@ const ChordStepSequencer: React.FC<{
 
         // Transport 事件
         useEffect(() => {
-            const onStart = () => (started.current = true);
-            const onStop = () => {
+            const onStart = async () => {
+                started.current = true;
+                await bgAudioRef.current?.play();
+            };
+            const onStop = async () => {
                 started.current = false;
                 setHighlighted(-1);
+                await bgAudioRef.current?.stop();
             };
             Tone.getTransport().on("start", onStart);
             Tone.getTransport().on("stop", onStop);
@@ -157,7 +164,7 @@ const ChordStepSequencer: React.FC<{
                     </div>
 
                 ))}
-
+                <BackgroundAudio ref={bgAudioRef} duration={1} />
             </div >
         );
     };

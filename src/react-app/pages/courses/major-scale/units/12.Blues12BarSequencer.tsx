@@ -90,8 +90,8 @@ const Blues12BarSequencer: React.FC = () => {
         new Tone.Loop(time => {
             const barIndex = Math.floor(step / beatsPerBar);
             const beatIndex = step % beatsPerBar;
-
             // 播放和弦，每小节第一拍
+
             if (beatIndex === 0) {
                 const chord = chordTimeline[barIndex];
                 chordSynthRef.current?.triggerAttackRelease(chord, "1m", time);
